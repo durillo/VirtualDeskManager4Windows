@@ -1,133 +1,137 @@
 # Virtual Desk Manager
 
-Gestor de escritorios virtuales y ventanas para **Windows 11**. Pone nombre a tus escritorios y los
-recupera si Windows los pierde, lleva cada aplicación al escritorio donde la quieres, devuelve las
-ventanas a su sitio al reconectar las pantallas, reparte las ventanas en zonas y te da atajos de
-teclado para todo, además de una consola que baja desde arriba de la pantalla.
+**English** · [Español](README.es.md)
 
-Funciona como usuario normal: **no pide permisos de administrador, no instala drivers y no se mete
-dentro de otros programas**.
+A virtual desktop and window manager for **Windows 11**. It names your desktops and brings them back
+if Windows loses them, takes each application to the desktop where you want it, puts windows back
+where they were when you reconnect your screens, snaps windows into zones and gives you keyboard
+shortcuts for everything, plus a console that drops down from the top of the screen.
 
-Las descargas están en [Releases](../../releases).
+It runs as a normal user: **it never asks for administrator rights, installs no drivers and never
+gets inside other programs**.
+
+Downloads are under [Releases](../../releases).
+
+> The application itself is available in ten languages, including English and Spanish. Some
+> comments in the source code are in Spanish.
 
 ---
 
-## Descargar
+## Download
 
-| Fichero | Para qué |
+| File | What it is |
 |---|---|
-| `VirtualDeskManager-<versión>.msi` | **El instalador, el recomendado.** Se instala sólo para tu usuario, sin pedir administrador, y se actualiza solo. |
-| `VirtualDeskManager-<versión>.exe` | Versión portable: un único fichero que se ejecuta sin instalar. No se actualiza solo. |
+| `VirtualDeskManager-<version>.msi` | **The installer, recommended.** Installs for your user only, without administrator rights, and updates itself. |
+| `VirtualDeskManager-<version>.exe` | Portable version: a single file that runs without installing. It does not update itself. |
 
-Los dos llevan .NET dentro: **no hace falta instalar nada más**.
+Both include .NET: **there is nothing else to install**.
 
-- **Versiones estables**: sin etapa en el nombre (`1.0.0`). Son las recomendadas.
-- **Betas**: con la etapa en el nombre (`1.0.0-beta.4`), marcadas como *Pre-release*. Sirven para
-  probar lo nuevo antes de que sea estable y pueden tener fallos.
+- **Stable releases** have no stage in their name (`1.0.0`). These are the recommended ones.
+- **Betas** carry the stage in their name (`1.0.0-beta.4`) and are marked as *Pre-release*. They
+  let you try what is new before it becomes stable, and may have bugs.
 
-### Aviso de Windows al abrirlo
+### Windows warning when you open it
 
-Por ahora los ejecutables **no llevan un certificado reconocido por Windows**; estamos trabajando
-en ello. Mientras tanto puede salir:
+For now the installers **do not carry a certificate Windows recognises**; we are working on it.
+Until then you may see:
 
-- **SmartScreen** («Windows protegió su PC»): pulsa **Más información** y luego **Ejecutar de todas
-  formas**.
-- **Smart App Control**, si lo tienes activado, puede bloquearlo sin ofrecer la opción de
-  ejecutarlo. En ese caso hay que esperar a la versión firmada, o compilarlo tú (ver abajo).
-
----
-
-## Requisitos
-
-- **Windows 11 de 64 bits.** En Windows 10 no está probado.
-- Una cuenta de usuario normal. No hace falta ser administrador.
+- **SmartScreen** (“Windows protected your PC”): click **More info** and then **Run anyway**.
+- **Smart App Control**, if you have it on, may block it without offering to run it. In that case
+  wait for the signed release, or build it yourself (see below).
 
 ---
 
-## Primeros pasos
+## Requirements
 
-1. Instala el `.msi`, o abre el `.exe` portable.
-2. Virtual Desk Manager se queda en la **bandeja del sistema**, junto al reloj. El icono muestra el
-   número del escritorio en el que estás.
-3. **Un clic en el icono** abre la ventana principal:
-   - **Mis escritorios**: una tarjeta por escritorio con sus ventanas en miniatura. Clic para ir,
-     arrastra una ventana para llevarla a otro, y desde el menú «…» cambias el nombre o eliminas
-     el escritorio. La tarjeta «+» crea uno nuevo.
-   - **Automatizaciones**: «cuando se abra *tal aplicación*, llévala a *tal escritorio*»,
-     maximizada, siempre visible o en todos los escritorios.
-   - **Distribuir ventanas**: zonas para encajar las ventanas en cada pantalla.
-   - **Ajustes**: todo lo demás, con buscador (**Ctrl+F**) y explicación de cada opción (**F1**).
-4. La ventana que tienes delante muestra un **botón propio en su barra de título**, junto a
-   minimizar: siempre visible, en todos los escritorios, mover a otro escritorio o «abrir siempre
-   esta aplicación aquí».
-
-Cerrar la ventana no cierra Virtual Desk Manager: sigue en la bandeja. Para salir, usa el menú del
-icono de la bandeja.
+- **Windows 11, 64-bit.** It has not been tested on Windows 10.
+- A normal user account. Administrator rights are not needed.
 
 ---
 
-## Qué hace
+## Getting started
 
-- **Escritorios con nombre que no se pierden.** Si Windows pierde tus escritorios, se reponen con
-  sus nombres al arrancar.
-- **Crear y eliminar escritorios** desde *Mis escritorios* o desde la vista de todos los
-  escritorios. Eliminar no cierra ninguna ventana: pasan al escritorio de al lado.
-- **Automatizaciones** para que cada aplicación se abra donde quieres. Se aplican una vez, cuando
-  aparece la ventana.
-- **Zonas** por pantalla: arrastra una ventana con **Mayús** pulsada para encajarla, sin rendijas.
-- **Recuerda dónde estaba cada ventana** y la devuelve a su sitio al volver del reposo o al
-  conectar otra vez una pantalla.
-- **Vista de todos los escritorios** con miniaturas en vivo: cambia de escritorio, mueve ventanas
-  arrastrándolas, ciérralas, y crea o elimina escritorios.
-- **Consola desplegable** al estilo de la de Quake, con el intérprete que elijas y una chincheta
-  para dejarla fija.
-- **Marcas en la barra de tareas** con el escritorio de cada aplicación.
-- **Copias de seguridad** de la configuración: automáticas, en OneDrive o Google Drive (como
-  carpeta) o en un fichero.
-- **Actualizaciones** desde la propia aplicación, con la firma de cada versión comprobada antes de
-  instalar. Nunca instala nada sin preguntar, salvo que se lo pidas.
-- **10 idiomas**: español, inglés, francés, portugués, ruso, chino, hindi, bengalí, urdu y árabe.
+1. Install the `.msi`, or open the portable `.exe`.
+2. Virtual Desk Manager sits in the **system tray**, next to the clock. Its icon shows the number of
+   the desktop you are on.
+3. **Click the icon** to open the main window:
+   - **My desktops**: one card per desktop with thumbnails of its windows. Click to go there, drag
+     a window to move it to another desktop, and use the “…” menu to rename or remove a desktop.
+     The “+” card creates a new one.
+   - **Automations**: “when *this application* opens, take it to *this desktop*”, maximized,
+     always on top or on every desktop.
+   - **Arrange windows**: zones to snap windows into on each screen.
+   - **Settings**: everything else, with a search box (**Ctrl+F**) and an explanation of every
+     option (**F1**).
+4. The window in front of you shows **a button of its own in its title bar**, next to minimize:
+   always on top, on every desktop, move to another desktop, or “always open this application
+   here”.
 
-### Atajos de serie
+Closing the window does not close Virtual Desk Manager: it stays in the tray. To quit, use the
+tray icon menu.
 
-Todos se cambian en **Ajustes › Atajos de teclado**.
+---
 
-| Atajo | Qué hace |
+## What it does
+
+- **Named desktops that don't get lost.** If Windows loses your desktops, they are restored with
+  their names at startup.
+- **Create and remove desktops** from *My desktops* or from the overview of every desktop. Removing
+  one never closes a window: its windows move to the neighbouring desktop.
+- **Automations** so each application opens where you want it. They are applied once, when the
+  window appears.
+- **Zones** per screen: drag a window with **Shift** held down to snap it into place, with no gaps.
+- **Remembers where every window was** and puts it back when you wake from sleep or plug a screen
+  back in.
+- **Overview of every desktop** with live thumbnails: switch desktops, move windows by dragging
+  them, close them, and create or remove desktops.
+- **Drop-down console**, Quake-style, with the shell you choose and a pin to keep it down.
+- **Taskbar marks** showing each application's desktop.
+- **Configuration backups**: automatic, to OneDrive or Google Drive (as a folder) or to a file.
+- **Updates** from within the application, with every release's signature checked before
+  installing. It never installs anything without asking, unless you tell it to.
+- **10 languages**: Spanish, English, French, Portuguese, Russian, Chinese, Hindi, Bengali, Urdu and
+  Arabic.
+
+### Default shortcuts
+
+All of them can be changed in **Settings › Keyboard shortcuts**.
+
+| Shortcut | What it does |
 |---|---|
-| `Ctrl + Alt + ←` / `→` | Escritorio anterior / siguiente |
-| `Ctrl + Shift + 1…9` | Ir directo a ese escritorio |
-| `Ctrl + Alt + Shift + ←` / `→` | Llevar la ventana activa al escritorio anterior / siguiente |
-| `Ctrl + Alt + ↑` | Vista de todos los escritorios |
-| `Win + Ctrl + ↑` / `↓` | Abrir / cerrar la vista de tareas de Windows |
-| `Ctrl + Alt + T` | Ventana activa siempre visible |
-| `Ctrl + Alt + P` | Ventana activa en todos los escritorios |
-| `Ctrl + Shift + º` | Bajar / recoger la consola (la tecla de debajo de Escape) |
-| `Ctrl + Alt + Shift + º` | Fijar / soltar la consola |
+| `Ctrl + Alt + ←` / `→` | Previous / next desktop |
+| `Ctrl + Shift + 1…9` | Go straight to that desktop |
+| `Ctrl + Alt + Shift + ←` / `→` | Take the active window to the previous / next desktop |
+| `Ctrl + Alt + ↑` | Overview of every desktop |
+| `Win + Ctrl + ↑` / `↓` | Open / close Windows Task View |
+| `Ctrl + Alt + T` | Active window always on top |
+| `Ctrl + Alt + P` | Active window on every desktop |
+| `Ctrl + Shift + º` | Drop down / roll up the console (the key below Escape on a Spanish keyboard) |
+| `Ctrl + Alt + Shift + º` | Pin / unpin the console |
 
 ---
 
-## A tener en cuenta
+## Good to know
 
-- **Atajos que ya usa otro programa.** Un atajo global gana al de la aplicación (por ejemplo,
-  `Ctrl + Shift + número` también lo usa Excel). Si un atajo sale en rojo, otro programa lo tiene
-  ocupado: cámbialo.
-- **Ventanas de administrador.** Sobre una ventana abierta «como administrador» no se puede actuar
-  sin serlo, y Virtual Desk Manager no lo pide nunca.
-- **Actualizaciones de Windows.** Mover ventanas entre escritorios usa una parte interna de
-  Windows. Si una actualización la cambia, la aplicación sigue funcionando en un modo básico y
-  avisa de lo que queda desactivado.
-- **Algunas aplicaciones** (Teams, por ejemplo) dibujan su propio borde, y entre dos ventanas
-  encajadas puede quedar una raya de un píxel que no se puede quitar desde fuera.
+- **Shortcuts another program already uses.** A global shortcut wins over the application's own
+  (for example, Excel also uses `Ctrl + Shift + number`). If a shortcut shows in red, another
+  program has it: change it.
+- **Administrator windows.** A window opened “as administrator” cannot be acted on without being
+  one, and Virtual Desk Manager never asks to be.
+- **Windows updates.** Moving windows between desktops relies on an internal part of Windows. If an
+  update changes it, the application keeps working in a basic mode and tells you what is switched
+  off.
+- **Some applications** (Teams, for example) draw their own border, and a one-pixel line may remain
+  between two snapped windows that cannot be removed from outside.
 
-La configuración está en `%LOCALAPPDATA%\VirtualDeskManager` (`settings.json`, `hotkeys.json`,
-`rules.json` y los registros en `logs\`). **Ajustes › Herramientas › Diario** cuenta en directo lo
-que va pasando, por si algo no funciona.
+The configuration lives in `%LOCALAPPDATA%\VirtualDeskManager` (`settings.json`, `hotkeys.json`,
+`rules.json` and the logs in `logs\`). **Settings › Tools › Log** shows what is happening live, in
+case something does not work.
 
 ---
 
-## Compilar
+## Building
 
-Hace falta el **SDK de .NET 10** en Windows.
+You need the **.NET 10 SDK** on Windows.
 
 ```powershell
 dotnet build
@@ -135,41 +139,41 @@ dotnet test
 dotnet run --project src\VirtualDeskManager.App
 ```
 
-Para generar el instalador y el portable, con el runtime dentro:
+To build the installer and the portable executable, with the runtime included:
 
 ```powershell
 dotnet tool install --global wix --version 5.0.2
 wix extension add --global WixToolset.UI.wixext/5.0.2
 wix extension add --global WixToolset.Util.wixext/5.0.2
 
-.\installer\build.ps1              # el .msi
-.\installer\build.ps1 -Portable    # el .exe
+.\installer\build.ps1              # the .msi
+.\installer\build.ps1 -Portable    # the .exe
 ```
 
-Lo generado queda en `dist\`.
+The output goes to `dist\`.
 
-### Cómo está hecho
+### How it is built
 
-Tres proyectos, con una regla clara entre ellos:
+Three projects, with a clear rule between them:
 
-- **`VirtualDeskManager.Core`**: la lógica, sin Win32 ni COM, y por eso con tests
+- **`VirtualDeskManager.Core`**: the logic, with no Win32 or COM, which is why it has tests
   (`tests/VirtualDeskManager.Core.Tests`).
-- **`VirtualDeskManager.Windows`**: todo el P/Invoke y el COM de Windows.
-- **`VirtualDeskManager.App`**: la aplicación WPF.
+- **`VirtualDeskManager.Windows`**: all the Windows P/Invoke and COM.
+- **`VirtualDeskManager.App`**: the WPF application.
 
-Más detalle en [docs/arquitectura.md](docs/arquitectura.md).
+More detail in [docs/arquitectura.md](docs/arquitectura.md) (in Spanish).
 
 ---
 
-## Licencia
+## License
 
-**[PolyForm Noncommercial 1.0.0](LICENSE.md)**. Gratis para cualquier uso **no comercial**:
-particulares, estudio, proyectos personales, ONG, centros educativos y administraciones públicas,
-con derecho a modificarlo y redistribuirlo.
+**[PolyForm Noncommercial 1.0.0](LICENSE.md)**. Free for any **non-commercial** use: individuals,
+study, personal projects, charities, educational institutions and public administrations, with the
+right to modify and redistribute it.
 
-- **Usarlo en una empresa cuenta como uso comercial**, aunque no se venda ni se cobre por él. Para
-  eso hace falta un permiso aparte del autor.
-- No es software libre en el sentido de la OSI (es *source available*). Por eso GitHub la muestra
-  como «Other».
+- **Using it at a company counts as commercial use**, even if nothing is sold or charged for it.
+  That needs separate permission from the author.
+- It is not free software in the OSI sense (it is *source available*), which is why GitHub shows the
+  license as “Other”.
 
 Copyright © 2026 Durillo.
