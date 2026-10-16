@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>VirtualDeskManager.App</RootNamespace>
+    <AssemblyName>VirtualDeskManager</AssemblyName>
+    <UseWPF>true</UseWPF>
+    <!-- Only for the tray icon: WPF has no NotifyIcon and this avoids an external dependency. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Disabled on purpose: System.Windows and System.Windows.Forms share too many type names. -->
+    <ImplicitUsings>disable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!--
+      El icono del ejecutable, que es de donde Windows saca el de la barra de tareas, el de
+      Alt+Tab, el del Explorador y el que enseña "Aplicaciones instaladas". Se genera con
+      tools\LogoGenerator.
+    -->
+    <ApplicationIcon>..\..\assets\vdesk.ico</ApplicationIcon>
+    <!--
+      WFO0003 (WFAC010 on older SDKs) asks to configure DPI awareness through the WinForms API.
+      This application is WPF: WinForms is only present for the tray icon and never calls
+      Application.Run, so the manifest is the correct place for per monitor v2 awareness.
+    -->
+    <NoWarn>$(NoWarn);WFAC010;WFO0003</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Los dos iconos de la bandeja, incrustados: uno normal y otro apagado para cuando las
+         reglas estan en pausa. Van dentro del ensamblado para que el .exe suelto siga siendo un
+         unico fichero. -->
+    <EmbeddedResource Include="..\..\assets\vdesk.ico" LogicalName="VirtualDeskManager.vdesk.ico" />
+    <EmbeddedResource Include="..\..\assets\vdesk-pausado.ico" LogicalName="VirtualDeskManager.vdesk-pausado.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VirtualDeskManager.Core\VirtualDeskManager.Core.csproj" />
+    <ProjectReference Include="..\VirtualDeskManager.Windows\VirtualDeskManager.Windows.csproj" />
+  </ItemGroup>
+
+</Project>

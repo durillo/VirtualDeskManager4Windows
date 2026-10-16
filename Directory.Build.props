@@ -1,0 +1,41 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PlatformTarget>x64</PlatformTarget>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Product>Virtual Desk Manager</Product>
+    <Company>Virtual Desk Manager</Company>
+    <!-- La unica version que se toca a mano. Subela con installer/bump-version.ps1, que
+         tambien comprueba que sea mayor que la anterior: Windows Installer decide si un MSI
+         actualiza al anterior comparando estos tres numeros, asi que bajarla deja al usuario
+         sin poder actualizar. -->
+    <Version>1.0.0</Version>
+
+    <!-- Vacia en una version publicada; "beta.1", "beta.2"... mientras no esta probada. Va aparte
+         porque Windows Installer solo entiende numeros: el MSI sigue siendo 0.22.0, y la definitiva
+         lo actualiza encima. Se cambia con installer/bump-version.ps1 -Etapa / -Final. -->
+    <Etapa>beta.4</Etapa>
+
+    <!-- Derivadas, para que no puedan quedar desincronizadas con la de arriba. -->
+    <AssemblyVersion>$(Version).0</AssemblyVersion>
+    <FileVersion>$(Version).0</FileVersion>
+    <InformationalVersion Condition="'$(Etapa)' != ''">$(Version)-$(Etapa)</InformationalVersion>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- El código de la aplicación va documentado entero (2026-10-09): con el fichero de
+       documentación encendido, el compilador avisa (CS1591) de todo lo público que entre sin su
+       comentario ///. Sólo en src: las pruebas se llaman por lo que comprueban y las herramientas
+       son de usar y tirar. -->
+  <PropertyGroup Condition="$(MSBuildProjectDirectory.Contains('\src\'))">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Los .xml de la documentación son para quien programa: no van en el instalador. -->
+    <PublishDocumentationFile>false</PublishDocumentationFile>
+    <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
+  </PropertyGroup>
+
+</Project>

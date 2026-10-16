@@ -1,0 +1,68 @@
+<UserControl x:Class="VirtualDeskManager.App.Views.Settings.AutomationsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+             xmlns:s="clr-namespace:VirtualDeskManager.App.Views.Settings">
+    <!-- Las reglas, con otro nombre: lo que Vdesk hace solo con las ventanas de cada aplicación. -->
+    <StackPanel>
+
+        <s:SettingGroup Header="{l:T Group.YourAutomations}" Margin="0,8,0,0">
+            <s:SettingCard Description="{l:T Row.AutomationsList}">
+                <StackPanel>
+                    <ListBox x:Name="RulesList" ItemsSource="{Binding Rules}" SelectedItem="{Binding SelectedRule}"
+                             MouseDoubleClick="OnRulesDoubleClick" MaxHeight="420"
+                             HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox Style="{StaticResource Switch}" Tag="compact" IsChecked="{Binding Enabled}"
+                                              VerticalAlignment="Top" Margin="0,2,16,0"
+                                              AutomationProperties.Name="{l:T Rules.ColumnEnabled}" />
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Style="{StaticResource Body}" />
+                                        <TextBlock Style="{StaticResource Secondary}">
+                                            <Run Text="{l:T Automations.When}" /><Run Text=" " /><Run Text="{Binding Match, Mode=OneWay}" />
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource Secondary}">
+                                            <Run Text="{l:T Automations.Do}" /><Run Text=" " /><Run Text="{Binding Actions, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Style="{StaticResource Secondary}" VerticalAlignment="Top" Margin="16,2,0,0">
+                                        <Run Text="{l:T Rules.ColumnPriority}" /><Run Text=" " /><Run Text="{Binding Priority, Mode=OneWay}" />
+                                    </TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <WrapPanel Margin="0,10,0,0">
+                        <Button Content="{l:T Automations.New}" Command="{Binding AddRuleCommand}" Margin="0,0,8,0"
+                                Style="{DynamicResource AccentButtonStyle}" />
+                        <Button Content="{l:T Common.Edit}" Command="{Binding EditRuleCommand}" Margin="0,0,8,0" />
+                        <Button Content="{l:T Common.Delete}" Command="{Binding DeleteRuleCommand}" />
+                    </WrapPanel>
+                </StackPanel>
+            </s:SettingCard>
+        </s:SettingGroup>
+
+        <s:SettingGroup Header="{l:T Group.HowApplied}">
+            <StackPanel>
+                <s:SettingRow Header="{l:T Row.PauseAutomations}" Description="{l:T Row.PauseAutomationsHint}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding RulesPaused}" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Row.ApplyOnStartup}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding ApplyRulesOnStartup}" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Row.AskToFollow}" Tip="{l:T Row.AskToFollowHint}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding AskToFollowRuleMoves}" />
+                </s:SettingRow>
+            </StackPanel>
+        </s:SettingGroup>
+
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,23 @@
+<Window x:Class="VirtualDeskManager.App.Views.DesktopGridWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VirtualDeskManager.DesktopGrid"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        Background="#12121A">
+
+    <!--
+        Sin AllowsTransparency y sin Opacity, y no es una cuestión de gusto: una ventana con
+        WS_EX_LAYERED acepta DwmRegisterThumbnail con S_OK y después no compone nada, ni las
+        miniaturas ni lo que pinta la propia ventana. Comprobado en la compilación 26200.
+
+        Todo se coloca por código sobre este Canvas, en las mismas coordenadas que se le dan a
+        DWM, porque las miniaturas no participan en el layout de WPF y la única forma de que
+        cuadren con los rótulos es calcular ambos a la vez.
+    -->
+    <Canvas x:Name="Surface" Background="#12121A" ClipToBounds="True" />
+</Window>

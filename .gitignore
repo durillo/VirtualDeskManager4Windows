@@ -1,0 +1,18 @@
+bin/
+obj/
+
+# Carpeta de trabajo del build, que se pisa en cada compilación. Lo que se reparte se copia a
+# releases/<version>/, que sí entra en el repositorio, y se publica además como asset de una
+# release de GitHub.
+dist/
+*.wixpdb
+.vs/
+*.user
+*.suo
+artifacts/
+TestResults/
+
+# Secretos locales: nunca al repositorio.
+.env
+.env.*
+!.env.ejemplo

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "startWithWindows": false,
+  "startMinimized": true,
+  "showTrayIcon": true,
+  "followMovedWindow": true,
+  "applyRulesOnStartup": true,
+  "desktopNavigation": "SendInput",
+  "language": "auto",
+  "showTitleBarButton": true,
+  "titleBarButtonOffset": 0,
+  "logging": {
+    "enabled": true,
+    "level": "Information"
+  }
+}

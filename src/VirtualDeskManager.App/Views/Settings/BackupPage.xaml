@@ -1,0 +1,41 @@
+<UserControl x:Class="VirtualDeskManager.App.Views.Settings.BackupPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+             xmlns:s="clr-namespace:VirtualDeskManager.App.Views.Settings">
+    <!-- OneDrive y Google Drive se usan como lo que son, carpetas que otro programa ya sincroniza,
+         y no a través de su API: para ocho kilobytes, el OAuth y el registro de aplicación serían
+         todo coste. -->
+    <StackPanel Margin="0,8,0,0">
+
+        <s:SettingRow Header="{l:T Settings.BackupAutomatic}" Description="{l:T Row.BackupAutomatic}">
+            <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding BackupAutomaticHistory}" />
+        </s:SettingRow>
+
+        <s:SettingRow Header="{l:T Settings.BackupCloud}" Tip="{l:T Settings.BackupExplanation}"
+                      Visibility="{Binding HasCloudFolders, Converter={StaticResource BoolToVisibility}}">
+            <ComboBox ItemsSource="{Binding CloudFolders}" SelectedItem="{Binding SelectedCloudFolder}"
+                      DisplayMemberPath="Display" Width="360" />
+        </s:SettingRow>
+
+        <s:SettingRow Header="{l:T Settings.BackupCopyToCloud}" IsEnabled="{Binding HasCloudFolder}"
+                      Visibility="{Binding HasCloudFolders, Converter={StaticResource BoolToVisibility}}">
+            <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding BackupCopyToCloud}" />
+        </s:SettingRow>
+
+        <s:SettingRow Header="{l:T Settings.BackupCloud}" Description="{l:T Settings.BackupNoCloudFound}"
+                      Visibility="{Binding HasCloudFolders, Converter={StaticResource InverseBoolToVisibility}}" />
+
+        <s:SettingCard Header="{l:T Row.YourCopies}" Description="{l:T Row.YourCopiesHint}">
+            <WrapPanel>
+                <Button Content="{l:T Settings.BackupNow}" Command="{Binding BackupNowCommand}" Margin="0,0,8,8"
+                        Style="{DynamicResource AccentButtonStyle}" />
+                <Button Content="{l:T Settings.BackupRestore}" Command="{Binding RestoreBackupCommand}" Margin="0,0,8,8" />
+                <Button Content="{l:T Settings.BackupExport}" Command="{Binding ExportBackupCommand}" Margin="0,0,8,8" />
+                <Button Content="{l:T Settings.BackupImport}" Command="{Binding ImportBackupCommand}" Margin="0,0,8,8" />
+                <Button Content="{l:T Settings.BackupOpenFolder}" Command="{Binding OpenBackupFolderCommand}" Margin="0,0,8,8" />
+            </WrapPanel>
+        </s:SettingCard>
+
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,75 @@
+<UserControl x:Class="VirtualDeskManager.App.Views.Settings.GeneralPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+             xmlns:s="clr-namespace:VirtualDeskManager.App.Views.Settings">
+    <StackPanel>
+
+        <s:SettingGroup Header="{l:T Group.Startup}" Margin="0,8,0,0">
+            <StackPanel>
+                <s:SettingRow Header="{l:T Settings.StartWithWindows}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding StartWithWindows}" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Settings.StartMinimized}" Description="{l:T Row.StartMinimized}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding StartMinimized}" />
+                </s:SettingRow>
+            </StackPanel>
+        </s:SettingGroup>
+
+        <s:SettingGroup Header="{l:T Settings.Language}">
+            <s:SettingRow Header="{l:T Settings.Language}" Description="{l:T Row.Language}">
+                <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}"
+                          DisplayMemberPath="Display" Width="260" />
+            </s:SettingRow>
+        </s:SettingGroup>
+
+        <!-- La actualización por internet: busca sola, avisa y pregunta (decidido el 2026-10-09). -->
+        <s:SettingGroup Header="{l:T Update.Group}" DataContext="{Binding Updates}">
+            <StackPanel>
+                <s:SettingRow Header="{l:T Update.Check}" Description="{Binding Status}" Help="{l:T Update.Help}">
+                    <WrapPanel>
+                        <s:Loading Compact="True" IsActive="{Binding IsBusy}" Margin="0,0,12,0" />
+                        <Button Content="{l:T Update.Install}" Command="{Binding InstallCommand}" Margin="0,0,8,0"
+                                Style="{DynamicResource AccentButtonStyle}"
+                                Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibility}}" />
+                        <Button Content="{l:T Update.Check}" Command="{Binding CheckCommand}" />
+                    </WrapPanel>
+                </s:SettingRow>
+                <s:SettingCard Header="{Binding NotesTitle}" Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibility}}">
+                    <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
+                        <TextBlock Text="{Binding Notes}" Style="{StaticResource Body}" />
+                    </ScrollViewer>
+                </s:SettingCard>
+                <s:SettingRow Header="{l:T Update.Auto}" Description="{l:T Update.AutoHint}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding CheckAutomatically}" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Update.InstallAuto}" Description="{l:T Update.InstallAutoHint}"
+                              Tip="{l:T Update.InstallAutoTip}" Help="{l:T Update.InstallAutoHelp}"
+                              IsEnabled="{Binding CanInstallAutomatically}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding InstallAutomatically}" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Update.Beta}" Description="{l:T Update.BetaHint}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Beta}" />
+                </s:SettingRow>
+            </StackPanel>
+        </s:SettingGroup>
+
+        <s:SettingGroup Header="{l:T Group.About}">
+            <StackPanel>
+                <s:SettingCard Header="Virtual Desk Manager" Description="{Binding Version}">
+                    <StackPanel>
+                        <TextBlock Text="{l:T About.Description}" Style="{StaticResource Body}" />
+                        <TextBlock Text="{l:T About.TrayNote}" Style="{StaticResource Secondary}" Margin="0,8,0,0" />
+                    </StackPanel>
+                </s:SettingCard>
+                <s:SettingRow Header="{l:T Settings.Configuration}" Description="{Binding ConfigurationDirectory}" Tip="{l:T Row.Configuration}">
+                    <WrapPanel>
+                        <Button Content="{l:T Settings.OpenConfigFolder}" Command="{Binding OpenConfigFolderCommand}" Margin="0,0,8,0" />
+                        <Button Content="{l:T Common.Reload}" Command="{Binding ReloadCommand}" />
+                    </WrapPanel>
+                </s:SettingRow>
+            </StackPanel>
+        </s:SettingGroup>
+
+    </StackPanel>
+</UserControl>

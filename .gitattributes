@@ -1,0 +1,25 @@
+# Normaliza los finales de línea en el repositorio (LF) y los deja nativos en el disco.
+* text=auto
+
+*.cs        text diff=csharp
+*.csproj    text
+*.props     text
+*.xaml      text
+*.manifest  text
+*.json      text
+*.md        text
+*.gitignore text
+
+# Visual Studio exige CRLF en el fichero de solución.
+*.sln       text eol=crlf
+
+*.ico       binary
+*.png       binary
+*.dll       binary
+*.exe       binary
+*.msi       binary
+
+# Lo que se ejecuta dentro de un contenedor Linux: con  al final de cada línea, sh se lo come
+# como parte de la orden.
+Dockerfile  text eol=lf
+*.sh        text eol=lf

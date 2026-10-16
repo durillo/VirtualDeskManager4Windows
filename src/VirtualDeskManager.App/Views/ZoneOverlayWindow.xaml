@@ -1,0 +1,22 @@
+<Window x:Class="VirtualDeskManager.App.Views.ZoneOverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VirtualDeskManager.ZoneOverlay"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Topmost="True"
+        ResizeMode="NoResize"
+        Left="-30000"
+        Top="-30000"
+        Width="10"
+        Height="10">
+
+    <!-- Las zonas se colocan en coordenadas del monitor, así que un lienzo y nada más: cualquier
+         panel que reorganice sus hijos pondría los rectángulos donde le pareciera a él y no donde
+         va a acabar la ventana. -->
+    <Canvas x:Name="Surface" />
+
+</Window>

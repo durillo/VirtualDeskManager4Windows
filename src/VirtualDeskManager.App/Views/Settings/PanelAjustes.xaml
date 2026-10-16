@@ -1,0 +1,166 @@
+<UserControl x:Class="VirtualDeskManager.App.Views.Settings.PanelAjustes"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+             xmlns:s="clr-namespace:VirtualDeskManager.App.Views.Settings">
+
+    <!--
+      Los ajustes, dentro de la ventana principal (pedido el 2026-10-10: que no sean otra ventana).
+      Como los Ajustes del Sistema de macOS: a la izquierda «‹ Virtual Desk Manager» para volver, el
+      buscador y las secciones; a la derecha la página. Las páginas son las de siempre
+      (Views/Settings), con los colores de la ventana principal (ver TemaMacClaro/Oscuro: las claves
+      de Fluent con sus colores).
+      F1 explica lo que se tiene delante y Ctrl+F busca.
+    -->
+
+    <UserControl.CommandBindings>
+        <CommandBinding Command="{x:Static s:SettingsCommands.GoToSection}" Executed="OnGoToSection" />
+    </UserControl.CommandBindings>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ============================================================ barra lateral -->
+        <Border Background="{DynamicResource M.Lateral}" BorderBrush="{DynamicResource M.Separador}" BorderThickness="0,0,1,0">
+            <DockPanel Margin="12,10,12,12">
+                <Button DockPanel.Dock="Top" Style="{DynamicResource BotonIcono}" HorizontalAlignment="Left" Click="OnVolver"
+                        Margin="2,0,0,8" AutomationProperties.AutomationId="Volver">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE76B;" FontFamily="{StaticResource IconFont}" FontSize="11" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource M.Acento}" Margin="0,1,6,0" />
+                        <TextBlock Text="Virtual Desk Manager" Foreground="{DynamicResource M.Acento}" FontWeight="SemiBold" />
+                    </StackPanel>
+                </Button>
+
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+                    <TextBox x:Name="SearchBox" Style="{DynamicResource CampoMac}" TextChanged="OnSearchChanged" Padding="20,0,0,0"
+                             AutomationProperties.Name="{l:T Search.Placeholder}" />
+                    <TextBlock Text="&#xE721;" FontFamily="{StaticResource IconFont}" FontSize="12" IsHitTestVisible="False"
+                               VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{DynamicResource M.TextoSuave}" />
+                    <TextBlock Text="{l:T Search.Placeholder}" IsHitTestVisible="False" Margin="30,0,8,0" VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" Foreground="{DynamicResource M.TextoSuave}"
+                               Visibility="{Binding Text, ElementName=SearchBox, Converter={x:Static s:CollapsedWhenEmpty.Inverse}}" />
+                </Grid>
+
+                <TextBlock DockPanel.Dock="Top" Text="{l:T Vdesk.Settings}" FontSize="11" FontWeight="SemiBold" Margin="10,4,0,6"
+                           Foreground="{DynamicResource M.TextoSuave}" />
+
+                <ListBox x:Name="Nav" SelectionChanged="OnNavigate" BorderThickness="0" Background="Transparent"
+                         ItemContainerStyle="{DynamicResource SeccionMac}" AutomationProperties.AutomationId="Nav"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" AutomationProperties.Name="{Binding Title}">
+                                <TextBlock Text="{Binding Glyph}" FontFamily="{StaticResource IconFont}" FontSize="15" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource M.Icono}" Margin="0,0,10,0" />
+                                <TextBlock Text="{Binding Title}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- ============================================================ página -->
+        <Grid Grid.Column="1" Background="{DynamicResource M.Contenido}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="52" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock x:Name="PageTitle" Margin="24,0,16,0" FontSize="15" FontWeight="Bold" VerticalAlignment="Center"
+                       Foreground="{DynamicResource M.Texto}" TextTrimming="CharacterEllipsis" />
+            <Border Height="1" Background="{DynamicResource M.Separador}" VerticalAlignment="Bottom" />
+
+            <ScrollViewer x:Name="Scroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="28,18,32,28" Focusable="False">
+                <StackPanel MaxWidth="980" HorizontalAlignment="Stretch">
+                    <TextBlock x:Name="PageIntro" TextWrapping="Wrap" Margin="2,0,0,14" Foreground="{DynamicResource M.TextoSuave}" />
+
+                    <ContentControl x:Name="PageHost" Focusable="False" />
+
+                    <!-- Lo que encuentra el buscador: sustituye a la página mientras se busca. -->
+                    <StackPanel x:Name="Results" Visibility="Collapsed">
+                        <ItemsControl x:Name="ResultList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Click="OnResultClick" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Cursor="Hand"
+                                            Margin="0,0,0,3" Padding="0" AutomationProperties.Name="{Binding Header}"
+                                            AutomationProperties.AutomationId="SearchHit">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="Card" Style="{StaticResource Card}" Margin="0">
+                                                    <ContentPresenter />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Card" Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsKeyboardFocused" Value="True">
+                                                        <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Glyph}" FontFamily="{StaticResource IconFont}" FontSize="16"
+                                                       VerticalAlignment="Center" Margin="0,0,16,0"
+                                                       Foreground="{DynamicResource M.Icono}" />
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding Header}" Style="{StaticResource Body}" />
+                                                <TextBlock Text="{Binding Path}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                                <TextBlock Text="{Binding Description}" Style="{StaticResource Secondary}"
+                                                           Visibility="{Binding Description, Converter={x:Static s:CollapsedWhenEmpty.Instance}}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Border x:Name="NoResults" Style="{StaticResource Card}" Visibility="Collapsed">
+                            <TextBlock Text="{l:T Search.None}" Style="{StaticResource Body}" />
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ============================================================ pie -->
+            <Border Grid.Row="2" Padding="24,6,16,6" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource M.Separador}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Right" Text="{l:T HelpPanel.F1Hint}" Style="{StaticResource Secondary}" Margin="16,0,0,0" />
+                    <TextBlock Text="{Binding LastAction}" TextTrimming="CharacterEllipsis" Style="{StaticResource Secondary}" TextWrapping="NoWrap" />
+                </DockPanel>
+            </Border>
+
+            <!-- ============================================================ ayuda (F1) -->
+            <Border x:Name="HelpPanel" Grid.RowSpan="3" Width="380" HorizontalAlignment="Right" Visibility="Collapsed"
+                    Background="{DynamicResource M.Grupo}" BorderBrush="{DynamicResource M.Separador}" BorderThickness="1,0,0,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="24" ShadowDepth="0" Opacity="0.25" />
+                </Border.Effect>
+                <DockPanel Margin="24,20,24,20">
+                    <Button DockPanel.Dock="Top" Style="{DynamicResource BotonMac}" Content="{l:T Overlay.Close}" HorizontalAlignment="Right" Click="OnCloseHelp" />
+                    <TextBlock x:Name="HelpTitle" DockPanel.Dock="Top" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,8,0,2"
+                               Foreground="{DynamicResource M.Texto}" />
+                    <TextBlock x:Name="HelpWhere" DockPanel.Dock="Top" Style="{StaticResource Secondary}" Margin="0,0,0,14" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="HelpText">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" Style="{StaticResource Body}" Margin="0,0,0,10" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

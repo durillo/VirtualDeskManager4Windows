@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  Instalador de VirtualDeskManager.
+
+  Se instala para el usuario actual, no para toda la máquina: la aplicación funciona como
+  usuario estándar y nunca pide elevación (§36), de modo que su instalador tampoco debe pedirla.
+  Eso la lleva a %LocalAppData%\Programs\VirtualDeskManager, que es donde Windows espera hoy las
+  instalaciones por usuario.
+
+  La carpeta de destino se muestra y se puede cambiar durante la instalación, que es lo que pide
+  el encargo.
+-->
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+
+  <Package Name="Virtual Desk Manager"
+           Manufacturer="Virtual Desk Manager"
+           Version="$(var.Version)"
+           UpgradeCode="8b0f1f2c-6a3d-4f2e-9c51-2b7e0a9d4c10"
+           Scope="perUser"
+           Compressed="yes"
+           Codepage="65001">
+
+    <SummaryInformation Description="Gestor avanzado de escritorios virtuales y ventanas para Windows 11" />
+
+    <!--
+      Instalar encima reemplaza lo que hubiera en lugar de dejar dos entradas.
+      AllowSameVersionUpgrades hace falta de verdad: sin él, instalar la misma versión (por
+      ejemplo la autocontenida sobre la que depende del runtime) deja las dos instaladas y dos
+      entradas en "Aplicaciones instaladas".
+    -->
+    <MajorUpgrade AllowSameVersionUpgrades="yes"
+                  DowngradeErrorMessage="Ya hay instalada una versión más reciente de Virtual Desk Manager." />
+
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <!--
+      El icono que sale en "Aplicaciones instaladas" y en Panel de control. Sin él Windows pone
+      un icono genérico, aunque el ejecutable sí tenga el suyo.
+    -->
+    <Icon Id="IconoVirtualDeskManager.exe" SourceFile="$(var.PublishDir)\VirtualDeskManager.exe" />
+    <Property Id="ARPPRODUCTICON" Value="IconoVirtualDeskManager.exe" />
+
+    <!--
+      La aplicación vive en la bandeja, así que estará en marcha al actualizar y sus ficheros
+      quedarían bloqueados. Se le pide que se cierre antes de copiar nada.
+    -->
+    <util:CloseApplication Id="CerrarVirtualDeskManager"
+                           Target="VirtualDeskManager.exe"
+                           CloseMessage="yes"
+                           RebootPrompt="no"
+                           Timeout="10" />
+
+    <Feature Id="Principal" Title="Virtual Desk Manager" Level="1">
+      <ComponentGroupRef Id="FicherosDeLaAplicacion" />
+      <ComponentGroupRef Id="AccesosDirectos" />
+      <ComponentGroupRef Id="OpcionesDeArranque" />
+    </Feature>
+
+    <!--
+      Las opciones que se ofrecen al instalar.
+
+      Se recuerdan de lo que ya hay en el equipo en vez de imponer el valor de fábrica en cada
+      actualización: quien apagó el arranque automático desde la propia aplicación no quiere
+      encontrárselo encendido otra vez por haber instalado una versión nueva. De ahí las dos
+      búsquedas: miran el estado real y la casilla sale marcada o no según lo que encuentren.
+    -->
+    <!--
+      La búsqueda va a una propiedad aparte y no directamente a la de la casilla, que es el error
+      que se cometió primero: una búsqueda en el registro deja en la propiedad el <b>valor</b>
+      encontrado, o sea la línea de órdenes entera, no un "1". La condición del componente nunca
+      se cumplía y el arranque automático no se escribía jamás, dejando además apuntando a donde
+      estuviera antes el ejecutable.
+    -->
+    <Property Id="VDM_ARRANQUEEXISTENTE" Secure="yes">
+      <RegistrySearch Id="BuscarArranqueAutomatico"
+                      Root="HKCU"
+                      Key="Software\Microsoft\Windows\CurrentVersion\Run"
+                      Name="VirtualDeskManager"
+                      Type="raw" />
+    </Property>
+
+    <Property Id="VDM_ACCESOEXISTENTE" Secure="yes">
+      <RegistrySearch Id="BuscarAccesoEscritorio"
+                      Root="HKCU"
+                      Key="Software\VirtualDeskManager"
+                      Name="AccesoEscritorio"
+                      Type="raw" />
+    </Property>
+
+    <!--
+      De lo encontrado a la casilla: marcada si ya lo tenía, y en una instalación nueva el
+      arranque automático se propone marcado. En una actualización, no haber encontrado nada
+      significa que el usuario lo quitó desde la aplicación, y eso se respeta en vez de volver a
+      encenderlo por la espalda.
+    -->
+    <!--
+      El "NOT VDM_..." de delante es para no pisar lo que venga por línea de órdenes: en una
+      instalación silenciosa, quien pasa VDM_INICIARCONWINDOWS=0 está diciendo que no lo quiere, y
+      eso manda sobre lo que se encuentre en el equipo.
+    -->
+    <SetProperty Id="VDM_INICIARCONWINDOWS" Value="1" After="AppSearch" Sequence="first"
+                 Condition="NOT VDM_INICIARCONWINDOWS AND (VDM_ARRANQUEEXISTENTE OR (NOT Installed AND NOT WIX_UPGRADE_DETECTED))" />
+
+    <SetProperty Id="VDM_ACCESOESCRITORIO" Value="1" After="AppSearch" Sequence="first"
+                 Condition="NOT VDM_ACCESOESCRITORIO AND VDM_ACCESOEXISTENTE" />
+
+    <!-- Carpeta propuesta, visible y modificable en el diálogo de instalación. -->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <ui:WixUI Id="WixUI_InstallDir" />
+
+    <!--
+      Para que la carpeta elegida quede registrada y Windows la muestre en "Aplicaciones
+      instaladas": sin esto la entrada aparece con la ubicación vacía y no hay forma de saber
+      desde el sistema dónde quedó instalada.
+    -->
+    <SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLFOLDER]" After="CostFinalize" />
+
+    <!--
+      Se salta el diálogo de licencia: este proyecto no lleva una, y mostrar un texto legal
+      inventado sería peor que no mostrar ninguno.
+    -->
+    <UI>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="2"
+               Condition="NOT Installed" />
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2"
+               Condition="NOT Installed" />
+
+      <!--
+        La página de opciones se cuela entre la carpeta y el resumen. Van antes de instalar y no
+        en el diálogo final porque cambian lo que se instala: un acceso directo es un componente,
+        y hay que saber si se quiere antes de empezar a copiar. El "iniciar ahora" sí se queda al
+        final, que es donde tiene sentido.
+
+        Los números de orden son más altos que los de WixUI a propósito: para un NewDialog manda
+        el último que se ejecuta, y así el nuestro sustituye al suyo sin tener que quitarlo.
+      -->
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="OpcionesDlg" Order="10"
+               Condition="WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID=&quot;1&quot;" />
+
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="OpcionesDlg" Order="10"
+               Condition="NOT Installed" />
+
+      <Dialog Id="OpcionesDlg" Width="370" Height="270" Title="[ProductName]">
+        <Control Id="Titulo" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes"
+                 Text="{\WixUI_Font_Title}Opciones" />
+
+        <Control Id="Descripcion" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes"
+                 Text="Elige cómo quieres que se comporte VirtualDeskManager." />
+
+        <Control Id="Banner" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.InstallDirDlgBannerBitmap)" />
+        <Control Id="LineaSuperior" Type="Line" X="0" Y="44" Width="370" Height="0" />
+
+        <Control Id="ArrancarConWindows" Type="CheckBox" X="20" Y="65" Width="330" Height="17"
+                 Property="VDM_INICIARCONWINDOWS" CheckBoxValue="1"
+                 Text="Iniciar VirtualDeskManager con Windows" />
+
+        <Control Id="ArrancarConWindowsNota" Type="Text" X="33" Y="82" Width="310" Height="24" Transparent="yes" NoPrefix="yes"
+                 Text="Arranca minimizado en la bandeja del sistema. Se puede cambiar luego desde los ajustes de la aplicación." />
+
+        <Control Id="AccesoEscritorio" Type="CheckBox" X="20" Y="115" Width="330" Height="17"
+                 Property="VDM_ACCESOESCRITORIO" CheckBoxValue="1"
+                 Text="Crear un acceso directo en el escritorio" />
+
+        <Control Id="AccesoEscritorioNota" Type="Text" X="33" Y="132" Width="310" Height="17" Transparent="yes" NoPrefix="yes"
+                 Text="En el menú Inicio se crea siempre." />
+
+        <Control Id="LineaInferior" Type="Line" X="0" Y="234" Width="370" Height="0" />
+
+        <!-- Cada acción dentro de su botón. Con <Publish Dialog="OpcionesDlg" Control="Next"> sueltos
+             fuera, el nombre tenía que coincidir a mano con el Id, y no coincidía: hasta la
+             0.22.0-beta.1, Siguiente y Atrás no hacían nada y el instalador no pasaba de aquí. -->
+        <Control Id="Atras" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)">
+          <Publish Event="NewDialog" Value="InstallDirDlg" />
+        </Control>
+        <Control Id="Siguiente" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+          <Publish Event="NewDialog" Value="VerifyReadyDlg" />
+        </Control>
+        <Control Id="Cancelar" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+          <Publish Event="SpawnDialog" Value="CancelDlg" />
+        </Control>
+      </Dialog>
+    </UI>
+
+    <!-- Ofrecer arrancarla al terminar. -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Iniciar VirtualDeskManager" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <!--
+      La ruta se compone en tiempo de instalación, cuando INSTALLFOLDER ya tiene valor: ponerla
+      directamente en la propiedad dejaría el literal "[INSTALLFOLDER]" sin resolver.
+    -->
+    <SetProperty Id="WixShellExecTarget"
+                 Value="[INSTALLFOLDER]VirtualDeskManager.exe"
+                 After="CostFinalize"
+                 Sequence="execute" />
+
+    <CustomAction Id="IniciarAplicacion"
+                  BinaryRef="Wix4UtilCA_X64"
+                  DllEntry="WixShellExec"
+                  Impersonate="yes"
+                  Return="ignore" />
+
+    <!--
+      Cerrar la aplicación de verdad antes de quitar o cambiar sus ficheros (BACKLOG 3.3).
+
+      CloseApplication, arriba, le manda WM_CLOSE a sus ventanas, y en Vdesk cerrar una ventana la
+      esconde en la bandeja: la aplicación seguía en marcha, sus ficheros bloqueados, y al
+      desinstalar quedaba la carpeta de instalación sin decir nada (RebootPrompt="no"). Lo que sí la
+      cierra es la señal Local\VirtualDeskManager.Quit, la misma que usa desplegar.ps1: sale por
+      las buenas, guardando la distribución de ventanas.
+
+      La activa PowerShell y no el propio ejecutable con una opción, porque una versión ya instalada
+      no la conocería y, sin otra copia en marcha, arrancaría la aplicación en plena desinstalación.
+      Espera hasta 15 s a que se vaya. Si no está en marcha, no hace nada.
+
+      Va codificado (-EncodedCommand) porque WiX lee los corchetes de PowerShell como propiedades
+      suyas. Es esto, en UTF-16:
+
+        try { $e = [System.Threading.EventWaitHandle]::OpenExisting('Local\VirtualDeskManager.Quit') } catch { exit 0 }
+        $e.Set() | Out-Null
+        $fin = (Get-Date).AddSeconds(15)
+        while ((Get-Process VirtualDeskManager -ErrorAction SilentlyContinue) -and (Get-Date) -lt $fin) { Start-Sleep -Milliseconds 300 }
+        $e.Dispose()
+        exit 0
+    -->
+    <SetProperty Id="WixQuietExecCmdLine"
+                 Value="&quot;[System64Folder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand dAByAHkAIAB7ACAAJABlACAAPQAgAFsAUwB5AHMAdABlAG0ALgBUAGgAcgBlAGEAZABpAG4AZwAuAEUAdgBlAG4AdABXAGEAaQB0AEgAYQBuAGQAbABlAF0AOgA6AE8AcABlAG4ARQB4AGkAcwB0AGkAbgBnACgAJwBMAG8AYwBhAGwAXABWAGkAcgB0AHUAYQBsAEQAZQBzAGsATQBhAG4AYQBnAGUAcgAuAFEAdQBpAHQAJwApACAAfQAgAGMAYQB0AGMAaAAgAHsAIABlAHgAaQB0ACAAMAAgAH0ACgAkAGUALgBTAGUAdAAoACkAIAB8ACAATwB1AHQALQBOAHUAbABsAAoAJABmAGkAbgAgAD0AIAAoAEcAZQB0AC0ARABhAHQAZQApAC4AQQBkAGQAUwBlAGMAbwBuAGQAcwAoADEANQApAAoAdwBoAGkAbABlACAAKAAoAEcAZQB0AC0AUAByAG8AYwBlAHMAcwAgAFYAaQByAHQAdQBhAGwARABlAHMAawBNAGEAbgBhAGcAZQByACAALQBFAHIAcgBvAHIAQQBjAHQAaQBvAG4AIABTAGkAbABlAG4AdABsAHkAQwBvAG4AdABpAG4AdQBlACkAIAAtAGEAbgBkACAAKABHAGUAdAAtAEQAYQB0AGUAKQAgAC0AbAB0ACAAJABmAGkAbgApACAAewAgAFMAdABhAHIAdAAtAFMAbABlAGUAcAAgAC0ATQBpAGwAbABpAHMAZQBjAG8AbgBkAHMAIAAzADAAMAAgAH0ACgAkAGUALgBEAGkAcwBwAG8AcwBlACgAKQAKAGUAeABpAHQAIAAwAA=="
+                 Before="CerrarPorLasBuenas"
+                 Sequence="execute" />
+
+    <CustomAction Id="CerrarPorLasBuenas"
+                  BinaryRef="Wix4UtilCA_X64"
+                  DllEntry="WixQuietExec"
+                  Execute="immediate"
+                  Return="ignore" />
+
+    <InstallExecuteSequence>
+      <!--
+        UILevel > 2 quiere decir "hay alguien mirando". Sin esa parte, una instalacion silenciosa
+        arrancaba la aplicacion igualmente, porque la propiedad de la casilla vale 1 aunque no
+        llegue a dibujarse ningun dialogo que la ensene. Se vio al desplegar por linea de ordenes:
+        aparecian dos copias en marcha.
+      -->
+      <!-- Al quitar, reparar o actualizar: siempre que ya hubiera una instalada. -->
+      <Custom Action="CerrarPorLasBuenas" Before="InstallValidate"
+              Condition="Installed OR WIX_UPGRADE_DETECTED" />
+
+      <Custom Action="IniciarAplicacion" After="InstallFinalize"
+              Condition="NOT Installed AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND UILevel &gt; 2" />
+    </InstallExecuteSequence>
+
+  </Package>
+
+  <Fragment>
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="CarpetaProgramas" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="VirtualDeskManager" />
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="DesktopFolder" />
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="CarpetaMenuInicio" Name="Virtual Desk Manager" />
+    </StandardDirectory>
+  </Fragment>
+
+  <Fragment>
+    <!--
+      Todo lo que produce dotnet publish. Se recoge la carpeta entera para que el instalador
+      valga igual si la publicación es autocontenida (con el runtime dentro) o dependiente del
+      runtime instalado.
+    -->
+    <ComponentGroup Id="FicherosDeLaAplicacion" Directory="INSTALLFOLDER">
+      <Files Include="$(var.PublishDir)\**" />
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="OpcionesDeArranque">
+
+      <!--
+        El arranque automático.
+
+        El valor es exactamente el que escribe la propia aplicación desde sus ajustes: mismo sitio,
+        mismo nombre y mismo texto, con las comillas y el modificador de arranque minimizado tal cual.
+        Si no coincidiera, su
+        casilla de "iniciar con Windows" no reconocería lo que puso el instalador y el usuario
+        vería una cosa en un sitio y otra en el otro.
+      -->
+      <Component Id="ArranqueAutomatico" Directory="INSTALLFOLDER" Guid="*"
+                 Condition="VDM_INICIARCONWINDOWS = &quot;1&quot;">
+
+        <!--
+          La ruta llave es este marcador y no la entrada de Run, y eso no es un detalle: se probó
+          al revés y estaba mal. Windows repara un componente cuando falta su ruta llave, así que
+          con Run de ruta llave bastaba reinstalar para que el arranque automático resucitara
+          después de que el usuario lo hubiera apagado desde la aplicación. Con el marcador
+          delante, el componente se ve sano, no se repara, y lo que el usuario quitó sigue quitado.
+        -->
+        <RegistryValue Root="HKCU"
+                       Key="Software\VirtualDeskManager"
+                       Name="ArranqueInstalado"
+                       Type="string"
+                       Value="1"
+                       KeyPath="yes" />
+
+        <RegistryValue Root="HKCU"
+                       Key="Software\Microsoft\Windows\CurrentVersion\Run"
+                       Name="VirtualDeskManager"
+                       Type="string"
+                       Value="&quot;[INSTALLFOLDER]VirtualDeskManager.exe&quot; --minimized" />
+      </Component>
+
+      <Component Id="AccesoDirectoEscritorio" Directory="DesktopFolder" Guid="*"
+                 Condition="VDM_ACCESOESCRITORIO = &quot;1&quot;">
+        <Shortcut Id="AtajoEscritorio"
+                  Name="Virtual Desk Manager"
+                  Description="Gestor avanzado de escritorios virtuales y ventanas"
+                  Target="[INSTALLFOLDER]VirtualDeskManager.exe"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="IconoVirtualDeskManager.exe" />
+
+        <!--
+          Deja constancia de que se quiso, para que la próxima instalación proponga lo mismo en
+          vez de volver al valor de fábrica.
+        -->
+        <RegistryValue Root="HKCU"
+                       Key="Software\VirtualDeskManager"
+                       Name="AccesoEscritorio"
+                       Type="string"
+                       Value="1"
+                       KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="AccesosDirectos">
+      <Component Id="AccesoDirectoMenuInicio" Directory="CarpetaMenuInicio" Guid="*">
+        <Shortcut Id="AtajoMenuInicio"
+                  Name="Virtual Desk Manager"
+                  Description="Gestor avanzado de escritorios virtuales y ventanas"
+                  Target="[INSTALLFOLDER]VirtualDeskManager.exe"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="IconoVirtualDeskManager.exe" />
+
+        <RemoveFolder Id="QuitarCarpetaMenuInicio" Directory="CarpetaMenuInicio" On="uninstall" />
+
+        <!-- En una instalación por usuario la clave de referencia tiene que ir en HKCU. -->
+        <RegistryValue Root="HKCU"
+                       Key="Software\VirtualDeskManager"
+                       Name="Instalado"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>

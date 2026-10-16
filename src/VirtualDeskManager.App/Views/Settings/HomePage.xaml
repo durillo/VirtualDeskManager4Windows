@@ -1,0 +1,73 @@
+<UserControl x:Class="VirtualDeskManager.App.Views.Settings.HomePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+             xmlns:s="clr-namespace:VirtualDeskManager.App.Views.Settings">
+    <!-- Inicio: cómo está todo y lo de cada día. Antes repartido entre el Panel y otras pestañas. -->
+    <StackPanel>
+
+        <WrapPanel Margin="0,8,0,0">
+            <Border Style="{StaticResource SummaryCard}">
+                <StackPanel>
+                    <TextBlock Text="Virtual Desk Manager" Style="{StaticResource Secondary}" />
+                    <TextBlock Text="{Binding Status}" Style="{StaticResource SummaryValue}"
+                               Foreground="{DynamicResource SystemFillColorSuccessBrush}" />
+                    <TextBlock Text="{Binding EngineSummary}" Style="{StaticResource Secondary}" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource SummaryCard}">
+                <StackPanel>
+                    <TextBlock Text="{l:T Home.CurrentDesktop}" Style="{StaticResource Secondary}" />
+                    <TextBlock Text="{Binding CurrentDesktopText}" Style="{StaticResource SummaryValue}" />
+                    <TextBlock Text="{Binding DesktopCountText}" Style="{StaticResource Secondary}" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource SummaryCard}">
+                <StackPanel>
+                    <TextBlock Text="{l:T Nav.Automations}" Style="{StaticResource Secondary}" />
+                    <TextBlock Text="{Binding AutomationsSummary}" Style="{StaticResource SummaryValue}" />
+                </StackPanel>
+            </Border>
+        </WrapPanel>
+
+        <s:SettingGroup Header="{l:T Home.Attention}" Margin="0,12,0,0">
+            <StackPanel>
+                <Border Style="{StaticResource InfoCard}"
+                        Visibility="{Binding AllInOrder, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel>
+                        <TextBlock Text="{l:T Home.AllGood}" FontWeight="SemiBold" Style="{StaticResource Body}" />
+                        <TextBlock Text="{l:T Home.AllGoodHint}" Style="{StaticResource Body}" />
+                    </StackPanel>
+                </Border>
+                <ItemsControl ItemsSource="{Binding Attention}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource CautionCard}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Text}" Style="{StaticResource Body}" VerticalAlignment="Center" Margin="0,0,16,0" />
+                                    <Button Grid.Column="1" Content="{l:T Attention.Go}"
+                                            Command="{x:Static s:SettingsCommands.GoToSection}" CommandParameter="{Binding Section}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </s:SettingGroup>
+
+        <s:SettingGroup Header="{l:T Home.QuickActions}">
+            <s:SettingCard Description="{l:T Home.QuickActionsHint}">
+                <WrapPanel>
+                    <ToggleButton Content="{l:T Home.PauseAutomations}" IsChecked="{Binding RulesPaused}" Margin="0,0,8,8" />
+                    <Button Content="{l:T Settings.BackupNow}" Command="{Binding BackupNowCommand}" Margin="0,0,8,8" />
+                    <Button Content="{l:T Common.Reload}" Command="{Binding ReloadCommand}" Margin="0,0,8,8" />
+                </WrapPanel>
+            </s:SettingCard>
+        </s:SettingGroup>
+
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,61 @@
+<UserControl x:Class="VirtualDeskManager.App.Views.Settings.ConsolePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+             xmlns:s="clr-namespace:VirtualDeskManager.App.Views.Settings">
+    <StackPanel>
+
+        <!-- La consola que baja desde arriba, al estilo de la de Quake. Los tamaños van en
+             porcentaje de la pantalla y no en píxeles: la misma configuración vale en un portátil
+             y en un monitor ultrapanorámico. -->
+        <s:SettingGroup Header="{l:T Settings.Console}" Margin="0,8,0,0">
+            <StackPanel>
+                <s:SettingRow Header="{l:T Settings.ConsoleEnabled}" Description="{l:T Row.Console}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding DropDownConsoleEnabled}" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Settings.ConsolePin}" Description="{l:T Row.ConsolePin}" IsEnabled="{Binding DropDownConsoleEnabled}" />
+                <s:SettingRow Header="{l:T Settings.ConsoleShell}" IsEnabled="{Binding DropDownConsoleEnabled}">
+                    <StackPanel>
+                        <ComboBox ItemsSource="{Binding ConsoleShells}" SelectedItem="{Binding SelectedConsoleShell}" Width="220" HorizontalAlignment="Right" />
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0" HorizontalAlignment="Right"
+                                    Visibility="{Binding ConsoleShellIsCustom, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock Text="{l:T Settings.ConsoleCommand}" Style="{StaticResource Secondary}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBox Text="{Binding ConsoleCustomCommand, UpdateSourceTrigger=LostFocus}" Width="300" FontFamily="Consolas" />
+                        </StackPanel>
+                    </StackPanel>
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Settings.ConsoleHideOnFocusLost}" IsEnabled="{Binding DropDownConsoleEnabled}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding DropDownConsoleHideWhenFocusLost}" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Settings.ConsoleFollowMouse}" IsEnabled="{Binding DropDownConsoleEnabled}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding DropDownConsoleFollowMouse}" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Settings.ConsoleWidth}" IsEnabled="{Binding DropDownConsoleEnabled}">
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Style="{StaticResource ValueSlider}" Value="{Binding ConsoleWidthPercent}" Minimum="10" Maximum="100" />
+                        <TextBlock Style="{StaticResource SliderValue}" Text="{Binding ConsoleWidthPercent, StringFormat={}{0}%}" />
+                    </StackPanel>
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Settings.ConsoleHeight}" IsEnabled="{Binding DropDownConsoleEnabled}">
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Style="{StaticResource ValueSlider}" Value="{Binding ConsoleHeightPercent}" Minimum="10" Maximum="100" />
+                        <TextBlock Style="{StaticResource SliderValue}" Text="{Binding ConsoleHeightPercent, StringFormat={}{0}%}" />
+                    </StackPanel>
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Settings.ConsoleOpacity}" IsEnabled="{Binding DropDownConsoleEnabled}">
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Style="{StaticResource ValueSlider}" Value="{Binding ConsoleOpacityPercent}" Minimum="20" Maximum="100" />
+                        <TextBlock Style="{StaticResource SliderValue}" Text="{Binding ConsoleOpacityPercent, StringFormat={}{0}%}" />
+                    </StackPanel>
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Settings.ConsoleAnimation}" IsEnabled="{Binding DropDownConsoleEnabled}">
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Style="{StaticResource ValueSlider}" Value="{Binding ConsoleAnimationMilliseconds}" Minimum="0" Maximum="600" TickFrequency="10" IsSnapToTickEnabled="True" />
+                        <TextBlock Style="{StaticResource SliderValue}" Text="{Binding ConsoleAnimationMilliseconds, StringFormat={}{0} ms}" />
+                    </StackPanel>
+                </s:SettingRow>
+            </StackPanel>
+        </s:SettingGroup>
+
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,110 @@
+<UserControl x:Class="VirtualDeskManager.App.Views.Settings.ZonesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+             xmlns:s="clr-namespace:VirtualDeskManager.App.Views.Settings">
+    <StackPanel>
+
+        <s:SettingRow Header="{l:T Zones.Enabled}" Description="{l:T Row.Zones}" Help="{l:T Zones.Explanation}" Margin="0,8,0,0">
+            <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding ZonesEnabled}" />
+        </s:SettingRow>
+
+        <s:SettingGroup Header="{l:T Group.Dragging}" IsEnabled="{Binding ZonesEnabled}">
+            <StackPanel>
+                <s:SettingRow Header="{l:T Zones.SnapWhileDragging}" Tip="{l:T Zones.SnapHint}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding ZonesSnapWhileDragging}" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Zones.SeamlessEdges}" Tip="{l:T Zones.SeamlessEdgesHint}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding ZonesSeamlessEdges}" />
+                </s:SettingRow>
+            </StackPanel>
+        </s:SettingGroup>
+
+        <s:SettingGroup Header="{l:T Group.Screens}" IsEnabled="{Binding ZonesEnabled}">
+            <StackPanel>
+                <!-- Una tarjeta por monitor conectado. Un reparto guardado para un monitor que ya no
+                     está no se puede editar, así que no sale. -->
+                <ItemsControl ItemsSource="{Binding ZoneMonitors}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Card}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Margin="0,0,16,0">
+                                        <TextBlock Text="{Binding Header}" FontWeight="SemiBold" Style="{StaticResource Body}" Margin="0,0,0,8" />
+
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                            <TextBlock Text="{l:T Zones.Template}" Style="{StaticResource Secondary}" VerticalAlignment="Center" Width="90" />
+                                            <ComboBox ItemsSource="{Binding Templates}" SelectedItem="{Binding SelectedTemplate}"
+                                                      DisplayMemberPath="Display" Width="230" />
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" IsEnabled="{Binding HasZones}">
+                                            <TextBlock Text="{l:T Zones.Count}" Style="{StaticResource Secondary}" VerticalAlignment="Center" Width="90" />
+                                            <Slider Value="{Binding Count}" Minimum="1" Maximum="9" TickFrequency="1" IsSnapToTickEnabled="True"
+                                                    Width="180" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding Count}" Style="{StaticResource SliderValue}" MinWidth="30" />
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" IsEnabled="{Binding HasZones}">
+                                            <TextBlock Text="{l:T Zones.Gap}" Style="{StaticResource Secondary}" VerticalAlignment="Center" Width="90" />
+                                            <Slider Value="{Binding Gap}" Minimum="0" Maximum="40" TickFrequency="2" IsSnapToTickEnabled="True"
+                                                    Width="180" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding Gap, StringFormat={}{0} px}" Style="{StaticResource SliderValue}" />
+                                        </StackPanel>
+
+                                        <TextBlock Text="{l:T Zones.NoZones}" Style="{StaticResource Secondary}" Margin="0,8,0,0"
+                                                   Visibility="{Binding HasNoZones, Converter={StaticResource BoolToVisibility}}" />
+                                    </StackPanel>
+
+                                    <!-- La vista previa se calcula con las zonas de verdad y luego se
+                                         escala, así que no puede enseñar algo distinto de lo que se aplica.
+                                         El recuadro toma la proporción exacta del monitor. -->
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{l:T Zones.Preview}" Style="{StaticResource Secondary}" Margin="0,0,0,4" />
+                                        <Border Background="#18808080" BorderBrush="#40808080" BorderThickness="1" CornerRadius="3" HorizontalAlignment="Left">
+                                            <ItemsControl ItemsSource="{Binding Preview}" Width="{Binding PreviewWidth}" Height="{Binding PreviewHeight}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <Canvas />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemContainerStyle>
+                                                    <Style TargetType="ContentPresenter">
+                                                        <Setter Property="Canvas.Left" Value="{Binding Left}" />
+                                                        <Setter Property="Canvas.Top" Value="{Binding Top}" />
+                                                    </Style>
+                                                </ItemsControl.ItemContainerStyle>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Width="{Binding Width}" Height="{Binding Height}"
+                                                                Background="#403B82F6" BorderBrush="#803B82F6" BorderThickness="1"
+                                                                CornerRadius="{Binding DataContext.ZoneCorner, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                            <TextBlock Text="{Binding Number}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                       FontWeight="SemiBold" Opacity="0.8" />
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <s:SettingRow Header="{l:T Zones.AddHotkeys}" Description="{l:T Row.ZoneHotkeys}">
+                    <!-- El «Actualizar» que había al lado volvía a leer la ventana activa, no los
+                         monitores: no hacía nada aquí y se ha quitado. -->
+                    <Button Content="{l:T Zones.AddHotkeys}" Command="{Binding AddZoneHotkeysCommand}" />
+                </s:SettingRow>
+            </StackPanel>
+        </s:SettingGroup>
+
+    </StackPanel>
+</UserControl>

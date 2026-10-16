@@ -1,0 +1,37 @@
+<Window x:Class="VirtualDeskManager.App.Overlay.TitleBarButtonWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VirtualDeskManager.TitleBarButton"
+        Width="24"
+        Height="24"
+        Left="-30000"
+        Top="-30000"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Topmost="True"
+        ResizeMode="NoResize"
+        UseLayoutRounding="True">
+
+    <Border x:Name="Root"
+            CornerRadius="4"
+            Background="#40808080"
+            BorderBrush="#60FFFFFF"
+            BorderThickness="1"
+            Cursor="Hand">
+        <Viewbox Margin="2">
+            <!-- A chevron: the same shape a caption menu uses, readable at any size. -->
+            <Canvas Width="16" Height="16">
+                <Path x:Name="Glyph"
+                      Data="M 4,6.5 L 8,10.5 L 12,6.5"
+                      Stroke="#FF202020"
+                      StrokeThickness="1.8"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      StrokeLineJoin="Round" />
+            </Canvas>
+        </Viewbox>
+    </Border>
+</Window>

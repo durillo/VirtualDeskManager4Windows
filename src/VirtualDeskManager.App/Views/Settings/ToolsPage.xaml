@@ -1,0 +1,104 @@
+<UserControl x:Class="VirtualDeskManager.App.Views.Settings.ToolsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+             xmlns:s="clr-namespace:VirtualDeskManager.App.Views.Settings">
+    <StackPanel>
+
+        <!-- ======================================================== diario -->
+        <!-- Lo que va pasando, en directo: para saber por qué algo no funciona. -->
+        <s:SettingGroup Header="{l:T Tab.Diary}" Margin="0,8,0,0">
+            <StackPanel>
+                <s:SettingCard Header="{l:T Row.Diary}" Help="{l:T Diary.Hint}" DataContext="{Binding Diary}">
+                    <StackPanel>
+                        <WrapPanel>
+                            <TextBlock Text="{l:T Diary.Filter}" Style="{StaticResource Secondary}" VerticalAlignment="Center" Margin="0,0,8,6" />
+                            <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" Width="220" Margin="0,0,16,6" />
+                            <CheckBox Content="{l:T Diary.Pause}" IsChecked="{Binding Paused}" VerticalAlignment="Center" Margin="0,0,16,6" />
+                        </WrapPanel>
+                        <WrapPanel Margin="0,4,0,8">
+                            <Button Content="{l:T Diary.Copy}" Command="{Binding CopyCommand}" Margin="0,0,8,0" />
+                            <Button Content="{l:T Diary.OpenFolder}" Command="{Binding OpenFolderCommand}" Margin="0,0,8,0" />
+                            <Button Content="{l:T Diary.Clear}" Command="{Binding ClearCommand}" Margin="0,0,8,0" />
+                            <TextBlock Text="{Binding Feedback}" VerticalAlignment="Center" Style="{StaticResource Secondary}" />
+                        </WrapPanel>
+                        <ListBox x:Name="DiaryList" ItemsSource="{Binding Lines}" FontFamily="Consolas" FontSize="11" Height="340"
+                                 ItemContainerStyle="{StaticResource PlainLine}"
+                                 VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </s:SettingCard>
+                <s:SettingRow Header="{l:T Settings.WriteLogFile}" Description="{l:T Row.WriteLogFile}">
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding LoggingEnabled}" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Settings.LogLevel}" Tip="{l:T Row.LogLevel}" IsEnabled="{Binding LoggingEnabled}">
+                    <ComboBox ItemsSource="{Binding LogLevels}" SelectedItem="{Binding SelectedLogLevel}" Width="180" />
+                </s:SettingRow>
+                <s:SettingRow Header="{l:T Settings.OpenLogFolder}">
+                    <Button Content="{l:T Settings.OpenLogFolder}" Command="{Binding OpenLogFolderCommand}" />
+                </s:SettingRow>
+            </StackPanel>
+        </s:SettingGroup>
+
+        <!-- ======================================================== detalles técnicos -->
+        <Expander Style="{StaticResource FoldedGroup}" Header="{l:T Group.Technical}" Tag="{l:T Group.TechnicalHint}">
+            <StackPanel>
+                <s:SettingRow Header="{l:T Dashboard.Backend}" Description="{Binding BackendName}" Tip="{l:T Row.Backend}" />
+                <s:SettingCard Header="{l:T Dashboard.Capabilities}">
+                    <ItemsControl ItemsSource="{Binding Capabilities}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource Body}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Value}" Style="{StaticResource Secondary}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </s:SettingCard>
+                <s:SettingCard Header="{l:T Dashboard.ActiveWindow}" Description="{l:T Row.ActiveWindow}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="170" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="{l:T Dashboard.Process}" Style="{StaticResource Secondary}" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ActiveProcess}" Style="{StaticResource Body}" />
+                            <TextBlock Grid.Row="1" Text="{l:T Dashboard.WindowTitle}" Style="{StaticResource Secondary}" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ActiveTitle}" Style="{StaticResource Body}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                            <TextBlock Grid.Row="2" Text="{l:T Dashboard.Handle}" Style="{StaticResource Secondary}" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ActiveHandle}" Style="{StaticResource Mono}" />
+                            <TextBlock Grid.Row="3" Text="{l:T Dashboard.DesktopId}" Style="{StaticResource Secondary}" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ActiveDesktopId}" Style="{StaticResource Mono}" />
+                            <TextBlock Grid.Row="4" Text="{l:T Dashboard.AlwaysOnTop}" Style="{StaticResource Secondary}" />
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ActiveAlwaysOnTop}" Style="{StaticResource Body}" />
+                        </Grid>
+                        <WrapPanel Margin="0,10,0,0">
+                            <Button Content="{l:T Common.Refresh}" Command="{Binding RefreshCommand}" Margin="0,0,8,0" />
+                            <Button Content="{l:T Dashboard.ToggleAlwaysOnTop}" Command="{Binding ToggleAlwaysOnTopCommand}" />
+                        </WrapPanel>
+                    </StackPanel>
+                </s:SettingCard>
+            </StackPanel>
+        </Expander>
+
+    </StackPanel>
+</UserControl>

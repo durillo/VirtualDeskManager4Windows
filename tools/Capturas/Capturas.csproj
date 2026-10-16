@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- No entra en la solución: se lanza a mano para rehacer las capturas de docs/ajustes. -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Lo nativo de la aplicación; trae también WPF y UI Automation. -->
+    <ProjectReference Include="..\..\src\VirtualDeskManager.Windows\VirtualDeskManager.Windows.csproj" />
+  </ItemGroup>
+
+</Project>

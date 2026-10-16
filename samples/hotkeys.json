@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "hotkeys": [
+    {
+      "id": "desktop-left",
+      "modifiers": [ "Control", "Alt" ],
+      "key": "Left",
+      "command": { "type": "SwitchDesktopLeft" }
+    },
+    {
+      "id": "desktop-right",
+      "modifiers": [ "Control", "Alt" ],
+      "key": "Right",
+      "command": { "type": "SwitchDesktopRight" }
+    },
+    {
+      "id": "move-window-left",
+      "modifiers": [ "Control", "Alt", "Shift" ],
+      "key": "Left",
+      "command": { "type": "MoveWindowLeft" }
+    },
+    {
+      "id": "move-window-right",
+      "modifiers": [ "Control", "Alt", "Shift" ],
+      "key": "Right",
+      "command": { "type": "MoveWindowRight" }
+    },
+    {
+      "id": "toggle-topmost",
+      "modifiers": [ "Control", "Alt" ],
+      "key": "T",
+      "command": { "type": "ToggleAlwaysOnTop" }
+    },
+    {
+      "id": "toggle-pin",
+      "modifiers": [ "Control", "Alt" ],
+      "key": "P",
+      "command": { "type": "TogglePinWindow" }
+    }
+  ]
+}
