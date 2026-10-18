@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>VirtualDeskManager.Windows</RootNamespace>
+    <AssemblyName>VirtualDeskManager.Windows</AssemblyName>
+    <!--
+      Every P/Invoke, COM interface and Win32 constant of the application lives in this project
+      and nowhere else (spec sections 4 and 39).
+    -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      Solo por UI Automation, que es como se localizan los botones de la barra de tareas sin
+      inyectar nada en el Explorador. Trae los ensamblados de WPF pero no enciende la compilacion
+      de XAML: aqui no hay interfaz, y sigue sin haberla.
+    -->
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App.WPF" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VirtualDeskManager.Core\VirtualDeskManager.Core.csproj" />
+  </ItemGroup>
+
+</Project>

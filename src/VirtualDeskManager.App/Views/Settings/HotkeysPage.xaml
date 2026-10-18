@@ -1,0 +1,73 @@
+<UserControl x:Class="VirtualDeskManager.App.Views.Settings.HotkeysPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+             xmlns:s="clr-namespace:VirtualDeskManager.App.Views.Settings">
+    <UserControl.Resources>
+        <!-- Agrupados por lo que hacen: con todos en una lista, los de escritorio tapaban al resto. -->
+        <CollectionViewSource x:Key="Grouped" Source="{Binding Hotkeys}">
+            <!-- Sin ordenar aquí: el modelo de vista ya los da por grupo y en el orden del fichero,
+                 y ordenar en la vista no respeta el orden dentro de cada grupo. -->
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Group" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
+
+    <StackPanel>
+
+        <s:SettingCard Description="{l:T Row.HotkeysList}" Margin="0,8,0,3">
+            <StackPanel>
+                <ListView x:Name="HotkeysList" ItemsSource="{Binding Source={StaticResource Grouped}}"
+                          SelectedItem="{Binding SelectedHotkey}" MouseDoubleClick="OnHotkeysDoubleClick" MaxHeight="520">
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Margin="4,12,0,4"
+                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="{l:T Hotkeys.ColumnAction}" DisplayMemberBinding="{Binding Action}" Width="300" />
+                            <GridViewColumn Header="{l:T Hotkeys.ColumnShortcut}" DisplayMemberBinding="{Binding Shortcut}" Width="200" />
+                            <GridViewColumn Header="{l:T Hotkeys.ColumnStatus}" Width="130">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock x:Name="State" Text="{Binding Status}" ToolTip="{Binding Error}"
+                                                   Foreground="{DynamicResource SystemFillColorSuccessBrush}" />
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding IsConflict}" Value="True">
+                                                <Setter TargetName="State" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                <Setter TargetName="State" Property="FontWeight" Value="SemiBold" />
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <WrapPanel Margin="0,10,0,0">
+                    <Button Content="{l:T Hotkeys.New}" Command="{Binding AddHotkeyCommand}" Margin="0,0,8,0"
+                            Style="{DynamicResource AccentButtonStyle}" />
+                    <Button Content="{l:T Common.Edit}" Command="{Binding EditHotkeyCommand}" Margin="0,0,8,0" />
+                    <Button Content="{l:T Common.Delete}" Command="{Binding DeleteHotkeyCommand}" />
+                </WrapPanel>
+            </StackPanel>
+        </s:SettingCard>
+
+        <!-- Va aparte de la lista porque es una decisión de una vez, no algo que se toque al
+             editar cada combinación. -->
+        <s:SettingGroup Header="{l:T Group.Advanced}">
+            <s:SettingRow Header="{l:T Settings.InterceptReserved}" Description="{l:T Row.InterceptReserved}"
+                          Tip="{l:T Settings.InterceptReservedHint}">
+                <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding InterceptReservedHotkeys}" />
+            </s:SettingRow>
+        </s:SettingGroup>
+
+    </StackPanel>
+</UserControl>

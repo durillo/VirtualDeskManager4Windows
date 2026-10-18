@@ -1,0 +1,417 @@
+<Window x:Class="VirtualDeskManager.App.Views.Enlace.VentanaVdesk"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+        xmlns:vm="clr-namespace:VirtualDeskManager.App.ViewModels"
+        Title="Virtual Desk Manager"
+        Width="1080"
+        Height="720"
+        MinWidth="820"
+        MinHeight="520"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource M.Contenido}"
+        Foreground="{DynamicResource M.Texto}"
+        FontFamily="Segoe UI Variable Text, Segoe UI"
+        FontSize="13">
+
+    <!--
+      La ventana principal de Virtual Desk Manager. Aspecto de macOS / iOS (elegido el
+      2026-10-10): barra lateral gris con iconos azules, grupos redondeados, botones e interruptores
+      de macOS, clara con la luna para pasarla a oscura. La barra de título es la de Windows, sin
+      tocar: minimizar, maximizar y cerrar hacen lo de siempre (lo pidió el usuario).
+    -->
+
+    <Window.Resources>
+        <FontFamily x:Key="Iconos">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+
+        <Style x:Key="Suave" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource M.TextoSuave}" />
+        </Style>
+
+        <Style x:Key="Icono" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Iconos}" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- Botón de macOS: blanco con borde fino y una sombra apenas visible. -->
+        <Style x:Key="BotonMac" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource M.Boton}" />
+            <Setter Property="Foreground" Value="{DynamicResource M.Texto}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource M.Borde}" />
+            <Setter Property="Padding" Value="12,4" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="2" ShadowDepth="0.5" Direction="270" Opacity="0.12" />
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.8" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="BotonMacAcento" TargetType="Button" BasedOn="{StaticResource BotonMac}">
+            <Setter Property="Background" Value="{DynamicResource M.Acento}" />
+            <Setter Property="Foreground" Value="{DynamicResource M.SobreAcento}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource M.Acento}" />
+        </Style>
+        <Style x:Key="BotonIcono" TargetType="Button" BasedOn="{StaticResource BotonMac}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Padding" Value="6,4" />
+        </Style>
+
+        <!-- Interruptor de macOS, con el acento azul. -->
+        <Style x:Key="InterruptorMac" TargetType="CheckBox">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Width="38" Height="22" Background="Transparent">
+                            <Border x:Name="Pista" CornerRadius="11" Background="{DynamicResource M.InterruptorApagado}" />
+                            <Ellipse x:Name="Bola" Width="18" Height="18" Fill="{DynamicResource M.Bola}" HorizontalAlignment="Left" Margin="2,0,0,0">
+                                <Ellipse.Effect>
+                                    <DropShadowEffect BlurRadius="3" ShadowDepth="1" Direction="270" Opacity="0.25" />
+                                </Ellipse.Effect>
+                            </Ellipse>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Pista" Property="Background" Value="{DynamicResource M.Acento}" />
+                                <Setter TargetName="Bola" Property="HorizontalAlignment" Value="Right" />
+                                <Setter TargetName="Bola" Property="Margin" Value="0,0,2,0" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Una entrada de la barra lateral: icono azul y la selección en gris, como en Finder. -->
+        <Style x:Key="SeccionMac" TargetType="ListBoxItem">
+            <Setter Property="Foreground" Value="{DynamicResource M.Texto}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Fondo" CornerRadius="6" Padding="10,6" Margin="0,1" Background="Transparent">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Fondo" Property="Background" Value="{DynamicResource M.SeleccionLateral}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Cabecera de grupo de la barra lateral (ESCRITORIOS): no se elige. -->
+        <Style x:Key="CabeceraMac" TargetType="ListBoxItem">
+            <Setter Property="IsEnabled" Value="False" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <ContentPresenter Margin="10,14,0,6" TextElement.FontSize="11" TextElement.FontWeight="SemiBold"
+                                          TextElement.Foreground="{DynamicResource M.TextoSuave}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="7" />
+            <Setter Property="MinWidth" Value="7" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Track x:Name="PART_Track" IsDirectionReversed="True">
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Border CornerRadius="3.5" Background="{DynamicResource M.Borde}" />
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- El grupo redondeado de los Ajustes del Sistema. -->
+        <Style x:Key="Grupo" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource M.Grupo}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource M.Separador}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+    <!-- Los ajustes, dentro de esta misma ventana: tapan la vista Vdesk mientras se ven. -->
+    <ContentControl x:Name="HostAjustes" Visibility="Collapsed" Focusable="False" Panel.ZIndex="1" />
+
+    <Grid x:Name="VistaVdesk">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ======================================================== barra lateral -->
+        <Border Background="{DynamicResource M.Lateral}" BorderBrush="{DynamicResource M.Separador}" BorderThickness="0,0,1,0">
+            <DockPanel Margin="12,14,12,12">
+                <ListBox DockPanel.Dock="Bottom" Background="Transparent" BorderThickness="0" ItemContainerStyle="{StaticResource SeccionMac}"
+                         SelectionChanged="AbrirAjustes">
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE713;" Style="{StaticResource Icono}" FontSize="15" Foreground="{DynamicResource M.Icono}" Margin="0,0,10,0" />
+                            <TextBlock Text="{l:T Vdesk.Settings}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                </ListBox>
+
+                <!-- El grupo de los escritorios virtuales. La cabecera no se puede elegir. -->
+                <ListBox SelectedValuePath="Tag" SelectedValue="{Binding Seccion}" Background="Transparent" BorderThickness="0"
+                         ItemContainerStyle="{StaticResource SeccionMac}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBoxItem Style="{StaticResource CabeceraMac}">
+                        <TextBlock Text="{l:T Vdesk.GroupDesktops}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource M.TextoSuave}" />
+                    </ListBoxItem>
+                    <ListBoxItem Tag="{x:Static vm:SeccionVdesk.Escritorios}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE7C4;" Style="{StaticResource Icono}" FontSize="15" Foreground="{DynamicResource M.Icono}" Margin="0,0,10,0" />
+                            <TextBlock Text="{l:T Nav.Desktops}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="{x:Static vm:SeccionVdesk.Automatizaciones}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE945;" Style="{StaticResource Icono}" FontSize="15" Foreground="{DynamicResource M.Icono}" Margin="0,0,10,0" />
+                            <TextBlock Text="{l:T Nav.Automations}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="{x:Static vm:SeccionVdesk.Distribuir}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xF0E2;" Style="{StaticResource Icono}" FontSize="15" Foreground="{DynamicResource M.Icono}" Margin="0,0,10,0" />
+                            <TextBlock Text="{l:T Nav.Zones}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- ======================================================== contenido -->
+        <Grid Grid.Column="1" Background="{DynamicResource M.Contenido}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="52" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- La barra de herramientas: el título de la sección, su botón y claro / oscuro. -->
+            <Grid Margin="24,0,16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Titulo}" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" />
+
+                <!-- En Mis escritorios: crear uno. -->
+                <Button Grid.Column="1" Style="{StaticResource BotonMacAcento}" Padding="12,5" VerticalAlignment="Center"
+                        Command="{Binding Escritorios.NuevoCommand}" Visibility="{Binding EnEscritorios, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE710;" Style="{StaticResource Icono}" FontSize="11" Margin="0,0,8,0" />
+                        <TextBlock Text="{l:T Vdesk.NewDesktop}" />
+                    </StackPanel>
+                </Button>
+
+                <Button Grid.Column="2" Style="{StaticResource BotonIcono}" Margin="8,0,0,0" VerticalAlignment="Center"
+                        Click="CambiarTema" ToolTip="{l:T Vdesk.Theme}">
+                    <TextBlock x:Name="IconoTema" Text="&#xE708;" Style="{StaticResource Icono}" FontSize="15" Foreground="{DynamicResource M.TextoSuave}" />
+                </Button>
+            </Grid>
+            <Border Height="1" Background="{DynamicResource M.Separador}" VerticalAlignment="Bottom" />
+
+            <!-- ==================================================== Mis escritorios -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                          Visibility="{Binding EnEscritorios, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel Margin="28,20,28,24">
+                    <TextBlock Text="{Binding Subtitulo}" Style="{StaticResource Suave}" Margin="2,0,0,14" TextWrapping="Wrap" />
+
+                    <!-- Una tarjeta por escritorio: clic para ir, soltar una ventana para llevarla. -->
+                    <ItemsControl ItemsSource="{Binding Escritorios.Tarjetas}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.Resources>
+                            <DataTemplate DataType="{x:Type vm:EscritorioVista}">
+                                <Border x:Name="Tarjeta" Width="250" Margin="0,0,14,14" Background="{DynamicResource M.Grupo}" CornerRadius="10"
+                                        BorderBrush="{DynamicResource M.Separador}" BorderThickness="1" Cursor="Hand" AllowDrop="True"
+                                        Drop="SoltarVentana" DragOver="VentanaEncima" ToolTip="{l:T Vdesk.DesktopClickHint}"
+                                        MouseLeftButtonUp="TarjetaPulsada">
+                                    <StackPanel>
+                                        <!-- La miniatura: el color del escritorio y sus ventanas donde están. -->
+                                        <Border Margin="11,11,11,0" Height="124" CornerRadius="7" ClipToBounds="True">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="{Binding Color}" Offset="0" />
+                                                    <GradientStop Color="{Binding Color}" Offset="1.6" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                            <Grid>
+                                                <Border Background="{DynamicResource M.Grupo}" Opacity="0.35" />
+                                                <ItemsControl ItemsSource="{Binding Miniaturas}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <Canvas />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemContainerStyle>
+                                                        <Style TargetType="ContentPresenter">
+                                                            <Setter Property="Canvas.Left" Value="{Binding Izquierda}" />
+                                                            <Setter Property="Canvas.Top" Value="{Binding Arriba}" />
+                                                        </Style>
+                                                    </ItemsControl.ItemContainerStyle>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Border Width="{Binding Ancho}" Height="{Binding Alto}" Background="{DynamicResource M.Boton}" CornerRadius="4"
+                                                                    BorderBrush="#33000000" BorderThickness="0.5" ToolTip="{Binding Detalle}" Cursor="SizeAll"
+                                                                    PreviewMouseLeftButtonDown="EmpezarArrastre" MouseMove="ArrastrarVentana">
+                                                                <Border.Effect>
+                                                                    <DropShadowEffect BlurRadius="6" ShadowDepth="1" Opacity="0.25" />
+                                                                </Border.Effect>
+                                                                <StackPanel>
+                                                                    <Border Height="8" Background="{DynamicResource M.Separador}" CornerRadius="4,4,0,0" />
+                                                                    <TextBlock Text="{Binding Programa}" FontSize="10" Margin="5,2,4,0" TextTrimming="CharacterEllipsis"
+                                                                               Foreground="{DynamicResource M.TextoSuave}" />
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- El pie: color, nombre, «Actual», cuántas ventanas y el menú. -->
+                                        <DockPanel Margin="14,10,8,12">
+                                            <Button DockPanel.Dock="Right" Style="{StaticResource BotonIcono}" Click="MenuEscritorio" VerticalAlignment="Center"
+                                                    ToolTip="{l:T Vdesk.More}">
+                                                <TextBlock Text="&#xE712;" Style="{StaticResource Icono}" Foreground="{DynamicResource M.TextoSuave}" />
+                                            </Button>
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Ellipse Width="9" Height="9" Fill="{Binding Color}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding Nombre}" FontWeight="SemiBold" FontSize="13.5" TextTrimming="CharacterEllipsis" MaxWidth="140" />
+                                                    <Border Background="{DynamicResource M.Acento}" CornerRadius="4" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center"
+                                                            Visibility="{Binding Actual, Converter={StaticResource BoolToVisibility}}">
+                                                        <TextBlock Text="{l:T Vdesk.Current}" FontSize="10.5" Foreground="White" />
+                                                    </Border>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Cuantas}" Style="{StaticResource Suave}" FontSize="11.5" Margin="17,2,0,0" />
+                                            </StackPanel>
+                                        </DockPanel>
+                                    </StackPanel>
+                                </Border>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Actual}" Value="True">
+                                        <Setter TargetName="Tarjeta" Property="BorderBrush" Value="{DynamicResource M.Acento}" />
+                                        <Setter TargetName="Tarjeta" Property="BorderThickness" Value="2" />
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+
+                            <!-- Al final, la tarjeta «+»: lo mismo que «Nuevo escritorio» de arriba. -->
+                            <DataTemplate DataType="{x:Type vm:NuevaTarjeta}">
+                                <Button Width="250" Height="196" Margin="0,0,14,14" Command="{Binding Crear}" Cursor="Hand"
+                                        ToolTip="{l:T Vdesk.NewDesktop}" Focusable="True">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="Marco" CornerRadius="10" Background="Transparent" BorderThickness="1.5"
+                                                    BorderBrush="{DynamicResource M.Separador}">
+                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <TextBlock x:Name="Mas" Text="&#xE710;" Style="{StaticResource Icono}" FontSize="22"
+                                                               HorizontalAlignment="Center" Foreground="{DynamicResource M.TextoSuave}" />
+                                                    <TextBlock x:Name="Texto" Text="{l:T Vdesk.NewDesktop}" Margin="0,8,0,0" HorizontalAlignment="Center"
+                                                               Foreground="{DynamicResource M.TextoSuave}" />
+                                                </StackPanel>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Marco" Property="BorderBrush" Value="{DynamicResource M.Acento}" />
+                                                    <Setter TargetName="Mas" Property="Foreground" Value="{DynamicResource M.Acento}" />
+                                                    <Setter TargetName="Texto" Property="Foreground" Value="{DynamicResource M.Acento}" />
+                                                </Trigger>
+                                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                                    <Setter TargetName="Marco" Property="BorderBrush" Value="{DynamicResource M.Acento}" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.Resources>
+                    </ItemsControl>
+
+                    <TextBlock Text="{Binding Escritorios.Aviso}" Style="{StaticResource Suave}" TextWrapping="Wrap" Margin="2,0,0,4"
+                               Visibility="{Binding Escritorios.Aviso, Converter={StaticResource EmptyToCollapsed}}" />
+
+                    <!-- Lo de cada día al cambiar de escritorio; el resto, en Ajustes. -->
+                    <TextBlock Text="{l:T Vdesk.WhenSwitching}" FontWeight="SemiBold" Margin="2,14,0,8" />
+                    <Border Style="{StaticResource Grupo}" DataContext="{Binding Ajustes}" MaxWidth="900" HorizontalAlignment="Left">
+                        <StackPanel>
+                            <Grid Margin="16,11">
+                                <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T Settings.FollowMovedWindow}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{l:T Row.FollowMovedWindow}" Style="{StaticResource Suave}" FontSize="11.5" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <CheckBox Grid.Column="1" Style="{StaticResource InterruptorMac}" IsChecked="{Binding FollowMovedWindow}" VerticalAlignment="Center" />
+                            </Grid>
+                            <Border Height="1" Background="{DynamicResource M.Separador}" Margin="16,0,0,0" />
+                            <Grid Margin="16,11">
+                                <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T Settings.ShowDesktopInTray}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{l:T Row.ShowDesktopInTray}" Style="{StaticResource Suave}" FontSize="11.5" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <CheckBox Grid.Column="1" Style="{StaticResource InterruptorMac}" IsChecked="{Binding ShowDesktopInTray}" VerticalAlignment="Center" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Text="{l:T Vdesk.DesktopsMore}" Style="{StaticResource Suave}" FontSize="11.5" Margin="2,10,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ==================================================== Automatizaciones y Distribuir ventanas -->
+            <!-- Las páginas de siempre, con los controles de Fluent y los colores de Vdesk (ver PonerTema). -->
+            <ScrollViewer x:Name="ScrollPaginas" Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="Collapsed" Focusable="False">
+                <StackPanel Margin="28,20,32,28" MaxWidth="980" HorizontalAlignment="Stretch">
+                    <TextBlock Text="{Binding Subtitulo}" Style="{StaticResource Suave}" Margin="2,0,0,10" TextWrapping="Wrap" />
+                    <ContentControl x:Name="HostPaginas" Focusable="False" />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+    </Grid>
+</Window>

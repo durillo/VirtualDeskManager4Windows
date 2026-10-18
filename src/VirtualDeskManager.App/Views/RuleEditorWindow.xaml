@@ -1,0 +1,226 @@
+<Window x:Class="VirtualDeskManager.App.Views.RuleEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+        Title="{Binding Title}"
+        Width="520"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+
+    <Window.Resources>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,10,0,3" />
+            <Setter Property="Opacity" Value="0.75" />
+        </Style>
+        <Style x:Key="Section" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,16,0,2" />
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="700">
+        <StackPanel Margin="16">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="110" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                    <TextBlock Text="{l:T Rules.ColumnName}" Style="{StaticResource FieldLabel}" Margin="0,0,0,3" />
+                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="{l:T Rules.ColumnPriority}" Style="{StaticResource FieldLabel}" Margin="0,0,0,3" />
+                    <TextBox Text="{Binding Priority, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </Grid>
+
+            <CheckBox Content="{l:T Rules.ColumnEnabled}" IsChecked="{Binding Enabled}" Margin="0,12,0,0" />
+
+            <!-- ================================================== la aplicación
+                 Lo primero y lo único obligatorio. Antes aquí había una caja vacía pidiendo el
+                 nombre del proceso, que obliga a saber que Outlook se llama olk.exe. -->
+            <TextBlock Text="{l:T RuleEditor.Application}" Style="{StaticResource Section}" />
+            <TextBlock Text="{l:T RuleEditor.ApplicationHint}" Opacity="0.65" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6" />
+
+            <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}"
+                     Padding="4,3"
+                     Margin="0,0,0,6"
+                     ToolTip="{l:T RuleEditor.SearchHint}" />
+
+            <ListBox ItemsSource="{Binding Applications}"
+                     SelectedItem="{Binding SelectedApplication}"
+                     Height="170"
+                     HorizontalContentAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="28" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Image Grid.Column="0"
+                                   Source="{Binding Icon}"
+                                   Width="20"
+                                   Height="20"
+                                   VerticalAlignment="Center" />
+
+                            <StackPanel Grid.Column="1" Margin="4,0,8,0">
+                                <TextBlock Text="{Binding FriendlyName}" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding ProcessName}"
+                                           Opacity="0.55"
+                                           FontSize="11"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+
+                            <TextBlock Grid.Column="2"
+                                       Text="{Binding WindowCount}"
+                                       Opacity="0.55"
+                                       FontSize="11"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <TextBlock Text="{l:T RuleEditor.NoApplications}"
+                       Opacity="0.65"
+                       FontSize="11"
+                       Margin="0,6,0,0"
+                       Visibility="{Binding HasApplications, Converter={StaticResource InverseBoolToVisibility}}" />
+
+            <!-- ================================================== condiciones finas
+                 Plegado: quien necesita una expresión regular sabe buscarla, y a quien no la
+                 necesita no hay por qué enseñarle cinco cajas vacías. -->
+            <Expander Header="{l:T RuleEditor.Advanced}" Margin="0,14,0,0">
+                <StackPanel Margin="0,6,0,0">
+                    <TextBlock Text="{l:T RuleEditor.ProcessName}" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding ProcessName, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Text="{l:T RuleEditor.ExecutablePath}" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding ExecutablePath, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Text="{l:T RuleEditor.TitleContains}" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding TitleContains, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Text="{l:T RuleEditor.TitleRegex}" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding TitleRegex, UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas" />
+
+                    <TextBlock Text="{l:T RuleEditor.WindowClass}" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding WindowClass, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </Expander>
+
+            <!-- ================================================== acciones -->
+            <TextBlock Text="{l:T RuleEditor.Then}" Style="{StaticResource Section}" />
+
+            <!-- Desplegables con las tres opciones escritas, y no casillas de tres estados.
+                 Aquellas causaron dos fallos reportados como si fueran del programa: en una
+                 casilla asi, "vacio" no es "me da igual" sino "desactivalo a la fuerza", y la
+                 diferencia con el estado intermedio es un cuadrito gris que nadie distingue. -->
+            <Grid Margin="0,4,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="170" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{l:T Dashboard.AlwaysOnTop}" VerticalAlignment="Center" Margin="0,5" />
+                <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,4"
+                          ItemsSource="{Binding ActionChoices}"
+                          SelectedItem="{Binding AlwaysOnTopChoice}"
+                          DisplayMemberPath="Display" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{l:T Overlay.ShowOnAllDesktops}" VerticalAlignment="Center" Margin="0,5" />
+                <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,4"
+                          ItemsSource="{Binding ActionChoices}"
+                          SelectedItem="{Binding PinWindowChoice}"
+                          DisplayMemberPath="Display" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="{l:T RuleEditor.Maximized}" VerticalAlignment="Center" Margin="0,5" />
+                <ComboBox Grid.Row="3" Grid.Column="1" Margin="0,4"
+                          ItemsSource="{Binding ActionChoices}"
+                          SelectedItem="{Binding MaximizedChoice}"
+                          DisplayMemberPath="Display" />
+
+                <!-- Anclar la aplicacion, que no es anclar su ventana: alcanza tambien a las que
+                     abra despues. Es la diferencia entre que una videollamada de Teams herede el
+                     ajuste o nazca sin el. -->
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{l:T RuleEditor.PinApplication}" VerticalAlignment="Center" Margin="0,5" TextWrapping="Wrap" />
+                <ComboBox Grid.Row="2" Grid.Column="1" Margin="0,4"
+                          ItemsSource="{Binding ActionChoices}"
+                          SelectedItem="{Binding PinApplicationChoice}"
+                          DisplayMemberPath="Display" />
+
+                <!-- Sin poner nada, se pregunta. Esta opcion es para dejar de preguntar en el
+                     otro sentido: quedarse aqui con una ventana nueva. -->
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="{l:T RuleEditor.NewInstance}" VerticalAlignment="Center" Margin="0,5" TextWrapping="Wrap" />
+                <ComboBox Grid.Row="5" Grid.Column="1" Margin="0,4"
+                          ItemsSource="{Binding ActionChoices}"
+                          SelectedItem="{Binding NewInstanceChoice}"
+                          DisplayMemberPath="Display" />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="{l:T RuleEditor.ReuseExistingWindow}" VerticalAlignment="Center" Margin="0,5" TextWrapping="Wrap" />
+                <ComboBox Grid.Row="4" Grid.Column="1" Margin="0,4"
+                          ItemsSource="{Binding ActionChoices}"
+                          SelectedItem="{Binding ReuseExistingWindowChoice}"
+                          DisplayMemberPath="Display" />
+            </Grid>
+
+            <TextBlock Text="{l:T RuleEditor.NewInstanceHint}"
+                       Opacity="0.6"
+                       FontSize="11"
+                       TextWrapping="Wrap"
+                       Margin="0,2,0,0" />
+
+            <TextBlock Text="{l:T RuleEditor.ReuseExistingWindowHint}"
+                       Opacity="0.6"
+                       FontSize="11"
+                       TextWrapping="Wrap"
+                       Margin="0,2,0,6" />
+
+            <!-- Desplegable pero editable: se ofrecen los escritorios que existen, con su nombre
+                 y con su número, y quien quiera escribir otra cosa puede. -->
+            <TextBlock Text="{l:T RuleEditor.Desktop}" Style="{StaticResource FieldLabel}" />
+            <ComboBox ItemsSource="{Binding Desktops}"
+                      Text="{Binding Desktop, UpdateSourceTrigger=PropertyChanged}"
+                      IsEditable="True" />
+
+            <!-- Solo cuando hay mas de un monitor: con uno, el campo no puede decir nada util. -->
+            <StackPanel Visibility="{Binding HasSeveralMonitors, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock Text="{l:T RuleEditor.Monitor}" Style="{StaticResource FieldLabel}" />
+                <ComboBox ItemsSource="{Binding Monitors}"
+                          SelectedItem="{Binding SelectedMonitor}"
+                          DisplayMemberPath="Display"
+                          HorizontalAlignment="Left"
+                          MinWidth="280" />
+            </StackPanel>
+
+            <TextBlock Text="{Binding Error}"
+                       Foreground="#D13438"
+                       TextWrapping="Wrap"
+                       Margin="0,12,0,0" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                <Button x:Name="SaveButton" Content="{l:T Common.Save}" Padding="16,5" Margin="0,0,8,0" IsDefault="True" />
+                <Button x:Name="CancelButton" Content="{l:T Common.Cancel}" Padding="16,5" IsCancel="True" />
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>

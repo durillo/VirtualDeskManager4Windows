@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  El paquete que se guarda en GitHub Packages en cada version.
+
+  No es una biblioteca que nadie vaya a referenciar desde un proyecto: es un archivo con los
+  binarios compilados, para tener cada version guardada y poder bajarse una concreta sin depender
+  de que alguien haya guardado el MSI en su escritorio. Por eso todo va bajo tools/, que es donde
+  NuGet espera lo ejecutable, y por eso no declara dependencias ni ensamblados.
+
+  Los ficheros se toman de una carpeta que el flujo de trabajo prepara con los dos artefactos de
+  esta version, y no de dist/ con un comodin: en un equipo de desarrollo dist/ acumula todas las
+  versiones compiladas, y el paquete se llevaria dentro media docena de MSI viejos.
+-->
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>VirtualDeskManager</id>
+    <version>0.0.0</version>
+    <title>Virtual Desk Manager</title>
+    <authors>Durillo</authors>
+    <owners>Durillo</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="file">LICENSE.md</license>
+    <projectUrl>https://github.com/durillo/VirtualDeskManager4Windows</projectUrl>
+    <description>Gestor avanzado de escritorios virtuales y ventanas para Windows 11. Funciona como usuario estandar: sin permisos de administrador, sin drivers y sin inyeccion de DLL. Este paquete guarda el instalador y el ejecutable portable de esta version, los dos con el runtime de .NET dentro.</description>
+    <summary>Escritorios virtuales, reglas de ventanas, atajos globales y consola desplegable para Windows 11.</summary>
+    <copyright>Durillo</copyright>
+    <tags>windows virtual-desktops window-manager hotkeys wpf dotnet</tags>
+    <repository type="git" url="https://github.com/durillo/VirtualDeskManager4Windows" />
+  </metadata>
+
+  <files>
+    <file src="..\LICENSE.md" target="LICENSE.md" />
+    <file src="..\README.md" target="README.md" />
+    <file src="..\artifacts\paquete-contenido\*" target="tools" />
+  </files>
+</package>

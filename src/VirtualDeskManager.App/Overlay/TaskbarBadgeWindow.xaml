@@ -1,0 +1,20 @@
+<Window x:Class="VirtualDeskManager.App.Overlay.TaskbarBadgeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VirtualDeskManager.TaskbarBadges"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Topmost="True"
+        ResizeMode="NoResize"
+        Left="-30000"
+        Top="-30000"
+        Width="10"
+        Height="10">
+
+    <!-- Un lienzo y nada más: los distintivos van donde diga la barra de tareas, y cualquier panel
+         que reorganice a sus hijos los pondría donde le pareciera a él. -->
+    <Canvas x:Name="Surface" />
+</Window>

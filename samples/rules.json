@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "id": "2f0c1f4e-7d64-4a1b-9c2f-2a6f5f8f0a11",
+      "name": "Notepad always on top",
+      "enabled": true,
+      "priority": 100,
+      "match": {
+        "processName": "notepad.exe"
+      },
+      "actions": {
+        "alwaysOnTop": true
+      }
+    },
+    {
+      "id": "9af29565-d12b-461a-a46f-739f886a1653",
+      "name": "Calculator always on top",
+      "enabled": false,
+      "priority": 100,
+      "match": {
+        "processName": "CalculatorApp.exe"
+      },
+      "actions": {
+        "alwaysOnTop": true
+      }
+    },
+    {
+      "id": "9ff0eb88-482a-49ae-856f-750c85ce984b",
+      "name": "Spotify everywhere",
+      "enabled": false,
+      "priority": 100,
+      "match": {
+        "processName": "Spotify.exe"
+      },
+      "actions": {
+        "pinApplication": true
+      }
+    },
+    {
+      "id": "6d6a2f21-6b6d-4f0e-9f47-8a7cf0e2c5b1",
+      "name": "Terminal maximized",
+      "enabled": false,
+      "priority": 50,
+      "match": {
+        "processName": "WindowsTerminal.exe",
+        "titleRegex": ".*"
+      },
+      "actions": {
+        "maximized": true
+      }
+    }
+  ]
+}

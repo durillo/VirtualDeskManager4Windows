@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>VirtualDeskManager.Core</RootNamespace>
+    <AssemblyName>VirtualDeskManager.Core</AssemblyName>
+    <!--
+      This project must stay free of Win32 / COM / WPF references.
+      Everything here has to be unit-testable without Windows-specific APIs (spec section 40).
+    -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      The translations travel inside the assembly, so the single file executable stays a single
+      file. The files are named "en.json" and not "strings.en.json" on purpose: MSBuild would read
+      the second dot as a culture and move them into satellite assemblies.
+    -->
+    <EmbeddedResource Include="Localization\Strings\*.json" WithCulture="false" />
+  </ItemGroup>
+
+</Project>

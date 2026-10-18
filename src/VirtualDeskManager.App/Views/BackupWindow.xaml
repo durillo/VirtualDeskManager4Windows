@@ -1,0 +1,48 @@
+<Window x:Class="VirtualDeskManager.App.Views.BackupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:VirtualDeskManager.App.Localization"
+        Title="{l:T Backup.Title}"
+        Width="720"
+        Height="420"
+        MinWidth="560"
+        MinHeight="320"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+
+    <DockPanel Margin="16">
+
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{l:T Backup.Hint}"
+                   TextWrapping="Wrap"
+                   Opacity="0.75"
+                   Margin="0,0,0,10" />
+
+        <!-- Sin ninguna copia la lista vacía no explica nada, así que en su lugar se dice. -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{l:T Backup.None}"
+                   Margin="0,4,0,8"
+                   Visibility="{Binding HasSnapshots, Converter={StaticResource InverseBoolToVisibility}}" />
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button x:Name="RestoreButton" Content="{l:T Settings.BackupRestore}" Padding="16,5" Margin="0,0,8,0"
+                    IsEnabled="{Binding HasSelection}" />
+            <Button x:Name="DeleteButton" Content="{l:T Common.Delete}" Padding="16,5" Margin="0,0,8,0"
+                    IsEnabled="{Binding CanDelete}" />
+            <Button x:Name="CloseButton" Content="{l:T Common.Cancel}" Padding="16,5" IsCancel="True" />
+        </StackPanel>
+
+        <ListView ItemsSource="{Binding Snapshots}" SelectedItem="{Binding Selected}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="{l:T Backup.ColumnDate}" DisplayMemberBinding="{Binding Taken}" Width="150" />
+                    <GridViewColumn Header="{l:T Backup.ColumnOrigin}" DisplayMemberBinding="{Binding Origin}" Width="150" />
+                    <GridViewColumn Header="{l:T Backup.ColumnWhere}" DisplayMemberBinding="{Binding Where}" Width="110" />
+                    <GridViewColumn Header="{l:T Backup.ColumnMachine}" DisplayMemberBinding="{Binding Machine}" Width="150" />
+                    <GridViewColumn Header="{l:T Backup.ColumnSize}" DisplayMemberBinding="{Binding Size}" Width="80" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+    </DockPanel>
+</Window>

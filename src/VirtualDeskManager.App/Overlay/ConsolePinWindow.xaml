@@ -1,0 +1,29 @@
+<Window x:Class="VirtualDeskManager.App.Overlay.ConsolePinWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VirtualDeskManager.ConsolePin"
+        Width="26"
+        Height="26"
+        Left="-30000"
+        Top="-30000"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Topmost="True"
+        ResizeMode="NoResize"
+        UseLayoutRounding="True">
+
+    <!-- Una pestaña que cuelga del borde de abajo de la consola: esquinas redondas sólo abajo. -->
+    <Border x:Name="Root"
+            CornerRadius="0,0,6,6"
+            BorderThickness="1,0,1,1"
+            Cursor="Hand">
+        <Viewbox Margin="5">
+            <TextBlock x:Name="Glyph"
+                       FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                       FontSize="16" />
+        </Viewbox>
+    </Border>
+</Window>
