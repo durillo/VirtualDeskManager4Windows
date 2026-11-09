@@ -165,13 +165,4 @@ Más detalle en [docs/arquitectura.md](docs/arquitectura.md).
 
 ## Licencia
 
-**[PolyForm Noncommercial 1.0.0](LICENSE.md)**. Gratis para cualquier uso **no comercial**:
-particulares, estudio, proyectos personales, ONG, centros educativos y administraciones públicas,
-con derecho a modificarlo y redistribuirlo.
-
-- **Usarlo en una empresa cuenta como uso comercial**, aunque no se venda ni se cobre por él. Para
-  eso hace falta un permiso aparte del autor.
-- No es software libre en el sentido de la OSI (es *source available*). Por eso GitHub la muestra
-  como «Other».
-
-Copyright © 2026 Durillo.
+MIT
