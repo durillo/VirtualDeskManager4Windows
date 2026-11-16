@@ -166,6 +166,14 @@ More detail in [docs/arquitectura.md](docs/arquitectura.md) (in Spanish).
 
 ---
 
+## Privacy
+
+Virtual Desk Manager **does not collect, send or share any of your data**: no accounts, no
+telemetry, no statistics. What it keeps stays on your computer, and the only connection it makes is
+to check for updates. All the details are in the [privacy policy](PRIVACY.md).
+
+---
+
 ## License
 
 MIT

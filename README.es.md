@@ -163,6 +163,14 @@ Más detalle en [docs/arquitectura.md](docs/arquitectura.md).
 
 ---
 
+## Privacidad
+
+Virtual Desk Manager **no recoge, no envía y no comparte ningún dato tuyo**: ni cuentas, ni
+telemetría, ni estadísticas. Lo que guarda se queda en tu equipo, y la única conexión que hace es
+para buscar actualizaciones. Todos los detalles, en la [política de privacidad](PRIVACIDAD.md).
+
+---
+
 ## Licencia
 
 MIT
