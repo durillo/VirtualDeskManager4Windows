@@ -173,4 +173,10 @@ para buscar actualizaciones. Todos los detalles, en la [política de privacidad]
 
 ## Licencia
 
-MIT
+**Freeware** ([licencia](LICENSE.md)). Gratis para cualquier uso, también en empresas.
+
+- Se puede redistribuir gratis, sin modificar y con la licencia incluida.
+- El código está a la vista: se puede leer y compilar para uso propio, pero no distribuir versiones
+  modificadas, reutilizarlo en otros programas ni venderlo.
+
+Copyright © 2026 Durillo.

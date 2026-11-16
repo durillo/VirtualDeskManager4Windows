@@ -176,6 +176,10 @@ to check for updates. All the details are in the [privacy policy](PRIVACY.md).
 
 ## License
 
-MIT
+**Freeware** ([license](LICENSE.md)). Free for any use, including at companies.
+
+- It may be redistributed free of charge, unmodified and with the license included.
+- The source code is public: you may read it and build it for your own use, but not
+  distribute modified versions, reuse it in other software or sell it.
 
 Copyright © 2026 Durillo.
